@@ -1,1 +1,7 @@
 .claude/settings.local.json
+
+# Agent-generated files
+HelloAgentWorld.cs
+
+# POC/experimentation notebooks
+playground.dib

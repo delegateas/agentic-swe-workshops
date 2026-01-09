@@ -11,10 +11,10 @@ En konsulent fra Context& guider jer igennem arkitekturen bag agents, Model Cont
 | 5 min | Opsummering fra sidste gang |
 | 5 min | Intro til Polyglot Notebooks |
 | 15 min | Det agentiske landskab – overblik |
+| 55 min | **Byg en Agent** – teori + øvelse |
+| 15 min | *Pause* |
 | 50 min | MCP-servere – teori + øvelse |
 | 45 min | Skills – teori + øvelse |
-| 15 min | *Pause* |
-| 55 min | Byg en Agent – teori + øvelse |
 | 25 min | Integration – sæt det hele sammen – teori + øvelse |
 | 5 min | Afrunding |
 
@@ -25,7 +25,11 @@ Installer venligst inden workshoppen:
 - VS Code
 - Polyglot Notebooks extension (men .NET Extension Pack er nemmest)
 - .NET 8 SDK eller nyere
-- GitHub Copiliot (NB. Ikke påkrævet.)
+- **Ollama** – lokal LLM inference
+  - Installer: `winget install Ollama.Ollama`
+  - Download model: `ollama pull llama3.1:8b`
+  - Verificer: `ollama list` (skal vise llama3.1:8b)
+- GitHub Copilot (NB. Ikke påkrævet.)
 
 ## Domæne
 

@@ -17,10 +17,10 @@ En praktisk workshop hvor vi udforsker den nye verden af **agentic software engi
 | 5 min | Opsummering fra sidste gang |
 | 5 min | Intro til Polyglot Notebooks |
 | 15 min | Det agentiske landskab – overblik |
+| 55 min | **Byg en Agent** – teori + øvelse |
+| 15 min | *Pause* |
 | 50 min | MCP-servere – teori + øvelse |
 | 45 min | Skills – teori + øvelse |
-| 15 min | *Pause* |
-| 55 min | Byg en Agent – teori + øvelse |
 | 25 min | Integration – sæt det hele sammen – teori + øvelse |
 | 5 min | Afrunding |
 
@@ -207,8 +207,383 @@ Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622))
 
 #!markdown
 
+# Byg en Agent – teori + øvelse
+*55 minutter (15 min teori + 40 min øvelse)*
+
+## Teori: The Emperor Has No Clothes
+
+### Demystificering af AI Agents
+
+> **"The LLM never actually touches your filesystem. It just *asks* for things to happen."**
+> — Mihail Eric, ["The Emperor Has No Clothes"](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)
+
+AI coding assistants virker som magi, men kernen er simpel:
+- **~200 linjer kode** er alt der skal til
+- LLM beslutter hvad der skal ske
+- **Din kode** udfører handlingerne lokalt
+- Resultater sendes tilbage til LLM
+
+### The Agentic Loop - 5 Steps
+
+```
+1. User sender besked
+2. LLM beslutter hvad der skal ske
+3. Hvis LLM vil bruge et tool → vi udfører det lokalt
+4. Resultat sendes tilbage til LLM
+5. Gentag indtil LLM er færdig (ingen tool calls)
+```
+
+```
+┌──────────────────────────────────────────────────────┐
+│                    AGENTIC LOOP                       │
+│                                                       │
+│   ┌─────────┐    ┌─────────┐    ┌──────────────┐    │
+│   │  User   │───►│   LLM   │───►│ Tool Call?   │    │
+│   │ Prompt  │    │         │    │              │    │
+│   └─────────┘    └─────────┘    └──────┬───────┘    │
+│                       ▲                 │            │
+│                       │            Yes  │  No        │
+│                       │                 ▼            │
+│                  ┌────┴────┐      ┌──────────┐      │
+│                  │ Append  │◄─────│ Execute  │      │
+│                  │ Result  │      │  Tool    │      │
+│                  └─────────┘      └──────────┘      │
+│                                         │            │
+│                                    ┌────▼────┐      │
+│                                    │  Done   │      │
+│                                    └─────────┘      │
+└──────────────────────────────────────────────────────┘
+```
+
+### Minimum Viable Tools
+
+For en fungerende coding agent behøves kun:
+- **create_file** - Opret filer
+- (Valgfrit: read_file, list_files)
+
+Det er *virkelig* så simpelt!
+
+#!markdown
+
+## Øvelse: Byg en Agent der Skaber Kode
+*40 minutter*
+
+### Mål
+
+Byg en agent med ét tool (`create_file`) der kan generere C# kode.
+
+**Forventet output:** Agenten skaber `HelloAgentWorld.cs` i workshop-mappen!
+
+#!markdown
+
+### Step 1: Installer Ollama (forudsætning)
+
+Hvis ikke allerede gjort:
+```powershell
+winget install Ollama.Ollama
+ollama pull llama3.1:8b
+ollama list  # Verificer installation
+```
+
+#!csharp
+
+// Test: Kan vi nå Ollama?
+using System.Net.Http;
+
+var httpClient = new HttpClient();
+try
+{
+    var response = await httpClient.GetStringAsync("http://localhost:11434/api/tags");
+    Console.WriteLine("✅ Ollama kører!");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"❌ Ollama kører IKKE: {ex.Message}");
+    Console.WriteLine("Start Ollama med: ollama serve");
+}
+
+#!markdown
+
+### Step 2: Installer OllamaSharp
+
+#!csharp
+
+#r "nuget: OllamaSharp, 5.4.12"
+
+using OllamaSharp;
+using OllamaSharp.Models;
+using OllamaSharp.Models.Chat;
+using System.Text.Json;
+
+Console.WriteLine("✅ OllamaSharp loaded!");
+
+#!markdown
+
+### Step 3: Definer `create_file` Tool
+
+#!csharp
+
+// Tool definition - dette fortæller LLM hvad den kan gøre
+var createFileTool = new Tool
+{
+    Type = "function",
+    Function = new Function
+    {
+        Name = "create_file",
+        Description = "Create a file with the given content. Use this when asked to create, write, or generate a file.",
+        Parameters = new Parameters
+        {
+            Type = "object",
+            Properties = new Dictionary<string, Property>
+            {
+                ["path"] = new Property
+                {
+                    Type = "string",
+                    Description = "The file name to create (e.g., 'HelloWorld.cs')"
+                },
+                ["content"] = new Property
+                {
+                    Type = "string",
+                    Description = "The content to write to the file"
+                }
+            },
+            Required = ["path", "content"]
+        }
+    }
+};
+
+Console.WriteLine("✅ Tool defineret:");
+Console.WriteLine($"   Name: {createFileTool.Function.Name}");
+Console.WriteLine($"   Description: {createFileTool.Function.Description}");
+
+#!markdown
+
+### Step 4: Tool Execution Function
+
+**Din opgave:** Implementer funktionen der faktisk opretter filen.
+
+#!csharp
+
+// Workshop folder path
+var workshopPath = @"C:\code\GitHub\agentic-swe-workshops";
+
+string ExecuteCreateFile(string path, string content)
+{
+    // TODO: Implementer fil-oprettelse
+    // 1. Kombiner workshopPath med path
+    // 2. Skriv content til filen
+    // 3. Returner success/error besked
+
+    throw new NotImplementedException("Implementer ExecuteCreateFile!");
+}
+
+#!markdown
+
+### Løsning Step 4
+
+<details>
+<summary>Klik for at se løsningen</summary>
+
+```csharp
+string ExecuteCreateFile(string path, string content)
+{
+    var fullPath = Path.Combine(workshopPath, path);
+
+    try
+    {
+        File.WriteAllText(fullPath, content);
+        return $"✅ File created successfully at: {fullPath}";
+    }
+    catch (Exception ex)
+    {
+        return $"❌ Error creating file: {ex.Message}";
+    }
+}
+```
+
+</details>
+
+#!markdown
+
+### Step 5: Implementer The Agentic Loop
+
+**Din opgave:** Udfyld TODO-sektionerne i loopet.
+
+#!csharp
+
+async Task<string> RunAgent(string userMessage)
+{
+    var client = new OllamaApiClient("http://localhost:11434");
+
+    var messages = new List<Message>
+    {
+        new Message
+        {
+            Role = ChatRole.System,
+            Content = """
+                You are a helpful coding assistant. When asked to create files,
+                you MUST use the create_file tool. Always respond in the same
+                language as the user's message.
+                """
+        },
+        new Message { Role = ChatRole.User, Content = userMessage }
+    };
+
+    var tools = new List<Tool> { createFileTool };
+    var maxIterations = 10;
+    var iteration = 0;
+
+    while (iteration < maxIterations)
+    {
+        iteration++;
+        Console.WriteLine($"\n--- Iteration {iteration} ---");
+
+        // Send to LLM
+        var request = new ChatRequest
+        {
+            Model = "llama3.1:8b",
+            Messages = messages,
+            Tools = tools,
+            Stream = false
+        };
+
+        var response = await client.ChatAsync(request);
+        var assistantMessage = response.Message;
+        messages.Add(assistantMessage);
+
+        // TODO: Tjek om response indeholder tool calls
+        // Hint: assistantMessage.ToolCalls er en liste af tool calls
+
+        if (assistantMessage.ToolCalls != null && assistantMessage.ToolCalls.Any())
+        {
+            Console.WriteLine($"LLM wants to call {assistantMessage.ToolCalls.Count()} tool(s)");
+
+            foreach (var toolCall in assistantMessage.ToolCalls)
+            {
+                Console.WriteLine($"  Tool: {toolCall.Function.Name}");
+
+                // TODO: Eksekver tool og tilføj resultat
+                // 1. Hent path og content fra toolCall.Function.Arguments
+                // 2. Kald ExecuteCreateFile(path, content)
+                // 3. Tilføj tool result som ny Message med Role = ChatRole.Tool
+
+                throw new NotImplementedException("Implementer tool execution!");
+            }
+        }
+        else
+        {
+            // Ingen tool calls - LLM er færdig
+            Console.WriteLine("LLM finished (no tool calls)");
+            return assistantMessage.Content ?? "No response";
+        }
+    }
+
+    return "Max iterations reached";
+}
+
+Console.WriteLine("✅ Agentic loop function defined!");
+
+#!markdown
+
+### Løsning Step 5
+
+<details>
+<summary>Klik for at se løsningen</summary>
+
+```csharp
+if (assistantMessage.ToolCalls != null && assistantMessage.ToolCalls.Any())
+{
+    Console.WriteLine($"LLM wants to call {assistantMessage.ToolCalls.Count()} tool(s)");
+
+    foreach (var toolCall in assistantMessage.ToolCalls)
+    {
+        Console.WriteLine($"  Tool: {toolCall.Function.Name}");
+        Console.WriteLine($"  Args: {JsonSerializer.Serialize(toolCall.Function.Arguments)}");
+
+        string toolResult;
+        if (toolCall.Function.Name == "create_file")
+        {
+            var args = toolCall.Function.Arguments;
+            var path = args["path"]?.ToString() ?? "unknown.txt";
+            var content = args["content"]?.ToString() ?? "";
+            toolResult = ExecuteCreateFile(path, content);
+        }
+        else
+        {
+            toolResult = $"Unknown tool: {toolCall.Function.Name}";
+        }
+
+        Console.WriteLine($"  Result: {toolResult}");
+
+        messages.Add(new Message
+        {
+            Role = ChatRole.Tool,
+            Content = toolResult
+        });
+    }
+}
+```
+
+</details>
+
+#!markdown
+
+### Step 6: Test din Agent! 🚀
+
+#!csharp
+
+var result = await RunAgent(
+    "Lav en C# fil der hedder 'HelloAgentWorld.cs' som printer 'Hello Agent World!' til konsollen."
+);
+
+Console.WriteLine("\n=== Final Response ===");
+Console.WriteLine(result);
+
+#!markdown
+
+### Step 7: Verificer at filen blev oprettet
+
+#!csharp
+
+var filePath = Path.Combine(workshopPath, "HelloAgentWorld.cs");
+
+if (File.Exists(filePath))
+{
+    Console.WriteLine("🎉 SUCCESS! File created:");
+    Console.WriteLine(new string('-', 40));
+    Console.WriteLine(File.ReadAllText(filePath));
+    Console.WriteLine(new string('-', 40));
+}
+else
+{
+    Console.WriteLine("❌ File was NOT created. Check the agent output above.");
+}
+
+#!markdown
+
+### Checkpoint
+
+Du har nu:
+1. ✅ Defineret et tool (`create_file`)
+2. ✅ Implementeret tool execution
+3. ✅ Bygget et agentic loop (~50 linjer!)
+4. ✅ Set agenten skabe reel kode
+
+**Nøgleindsigt:** Det er *virkelig* så simpelt. ~200 linjer kode, og du har en fungerende agent!
+
+---
+
+# ☕ PAUSE (15 min)
+
+---
+
+#!markdown
+
 # MCP-servere – teori + øvelse
 *50 minutter (15 min teori + 35 min øvelse)*
+
+> **Fra Agent-øvelsen:** Vi byggede ét simpelt tool (`create_file`) manuelt.
+> Nu skal vi se hvordan **MCP standardiserer tools** - og introducerer vores ChargeSmart domæne!
 
 ## Teori: Model Context Protocol
 
@@ -724,408 +1099,14 @@ Du har nu:
 
 ---
 
-# ☕ PAUSE (15 min)
-
----
-
 #!markdown
 
-# Byg en Agent – teori + øvelse
-*55 minutter (15 min teori + 40 min øvelse)*
-
-## Teori: The Agentic Loop
-
-### "LLM in a loop with tools" - Demystificeret
-
-```
-┌──────────────────────────────────────────────────────┐
-│                    AGENTIC LOOP                       │
-│                                                       │
-│   ┌─────────┐    ┌─────────┐    ┌──────────────┐    │
-│   │  User   │───►│   LLM   │───►│ Tool Call?   │    │
-│   │ Prompt  │    │         │    │              │    │
-│   └─────────┘    └─────────┘    └──────┬───────┘    │
-│                       ▲                 │            │
-│                       │            Yes  │  No        │
-│                       │                 ▼            │
-│                  ┌────┴────┐      ┌──────────┐      │
-│                  │ Append  │◄─────│ Execute  │      │
-│                  │ Result  │      │  Tool    │      │
-│                  └─────────┘      └──────────┘      │
-│                                         │            │
-│                                    ┌────▼────┐      │
-│                                    │  Done   │      │
-│                                    └─────────┘      │
-└──────────────────────────────────────────────────────┘
-```
-
-#!markdown
-
-### Pseudokode
-
-```csharp
-var messages = [userPrompt];
-
-while (!done && iterations < maxIterations)
-{
-    var response = await llm.Complete(messages);
-
-    if (response.HasToolCalls)
-    {
-        foreach (var toolCall in response.ToolCalls)
-        {
-            var result = ExecuteTool(toolCall);
-            messages.Add(new ToolResult(toolCall.Id, result));
-        }
-    }
-    else
-    {
-        done = true;
-        return response.Text;
-    }
-}
-```
-
-### Hvornår stopper loopet?
-
-1. **LLM returnerer tekst uden tool calls** - Færdig!
-2. **Max iterations nået** - Sikkerhedsgrænse
-3. **Fejl** - Tool execution fejler
-
-#!markdown
-
-## Øvelse 3: Byg en EV Charging Assistant Agent
-*40 minutter*
-
-### Mål
-
-Implementer en komplet agentic loop der kan:
-- Søge efter ladere
-- Tjekke lader-status
-- Beregne omkostninger
-
-#!markdown
-
-### Step 1: Installer Anthropic SDK
-
-#!csharp
-
-#r "nuget: Anthropic.SDK, 3.2.4"
-
-#!markdown
-
-### Step 2: Definer vores Tools
-
-#!csharp
-
-using Anthropic.SDK.Common;
-using Anthropic.SDK.Messaging;
-using System.Text.Json;
-
-// Tool definitions for the LLM
-var tools = new List<Tool>
-{
-    new Tool
-    {
-        Name = "search_chargers",
-        Description = "Search for EV chargers by location or minimum power. Returns list of matching chargers.",
-        InputSchema = new InputSchema
-        {
-            Type = "object",
-            Properties = new Dictionary<string, Property>
-            {
-                ["location"] = new Property { Type = "string", Description = "Location to search, e.g. 'Nørrebro' or 'København'" },
-                ["min_power_kw"] = new Property { Type = "integer", Description = "Minimum power in kW (optional)" }
-            },
-            Required = new[] { "location" }
-        }
-    },
-    new Tool
-    {
-        Name = "get_charger_status",
-        Description = "Get real-time status of a specific charger including availability.",
-        InputSchema = new InputSchema
-        {
-            Type = "object",
-            Properties = new Dictionary<string, Property>
-            {
-                ["charger_id"] = new Property { Type = "string", Description = "The charger ID, e.g. CPH-001" }
-            },
-            Required = new[] { "charger_id" }
-        }
-    },
-    new Tool
-    {
-        Name = "calculate_charging_cost",
-        Description = "Calculate the cost to charge a specific amount at a given hour.",
-        InputSchema = new InputSchema
-        {
-            Type = "object",
-            Properties = new Dictionary<string, Property>
-            {
-                ["kwh"] = new Property { Type = "number", Description = "Amount of energy in kWh" },
-                ["hour"] = new Property { Type = "integer", Description = "Hour of day (0-23)" }
-            },
-            Required = new[] { "kwh", "hour" }
-        }
-    }
-};
-
-Console.WriteLine($"Defined {tools.Count} tools for the agent");
-
-#!markdown
-
-### Step 3: Tool Execution Functions
-
-#!csharp
-
-// Tool execution - kobler tool calls til vores implementationer
-string ExecuteTool(string toolName, JsonElement input)
-{
-    return toolName switch
-    {
-        "search_chargers" => SearchChargers(input),
-        "get_charger_status" => GetChargerStatusJson(input),
-        "calculate_charging_cost" => CalculateCostJson(input),
-        _ => throw new ArgumentException($"Unknown tool: {toolName}")
-    };
-}
-
-string SearchChargers(JsonElement input)
-{
-    var location = input.GetProperty("location").GetString()!.ToLower();
-    var minPower = input.TryGetProperty("min_power_kw", out var mp) ? mp.GetInt32() : 0;
-
-    var results = chargers.Values
-        .Where(c => c.Location.ToLower().Contains(location) || location.Contains("køben"))
-        .Where(c => c.PowerKw >= minPower)
-        .Select(c => new { c.Id, c.Name, c.Location, c.PowerKw, c.Type })
-        .ToList();
-
-    return JsonSerializer.Serialize(results);
-}
-
-string GetChargerStatusJson(JsonElement input)
-{
-    var chargerId = input.GetProperty("charger_id").GetString()!;
-
-    if (!chargers.TryGetValue(chargerId, out var charger))
-        return JsonSerializer.Serialize(new { error = $"Unknown charger: {chargerId}" });
-
-    var hasSession = activeSessions.TryGetValue(chargerId, out var session);
-
-    var status = new
-    {
-        charger_id = chargerId,
-        name = charger.Name,
-        available = !hasSession,
-        power_kw = charger.PowerKw,
-        current_session = hasSession ? session.vehicleId : null,
-        energy_delivered_kwh = hasSession ? session.kwh : (double?)null
-    };
-
-    return JsonSerializer.Serialize(status);
-}
-
-string CalculateCostJson(JsonElement input)
-{
-    var kwh = input.GetProperty("kwh").GetDouble();
-    var hour = input.GetProperty("hour").GetInt32();
-
-    decimal pricePerKwh = hour switch
-    {
-        >= 0 and < 6 => 1.50m,
-        >= 6 and < 17 => 2.50m,
-        >= 17 and < 21 => 4.00m,
-        >= 21 and <= 23 => 2.50m,
-        _ => 2.50m
-    };
-
-    var tariff = hour switch
-    {
-        >= 0 and < 6 => "off-peak",
-        >= 17 and < 21 => "peak",
-        _ => "normal"
-    };
-
-    return JsonSerializer.Serialize(new
-    {
-        kwh,
-        hour,
-        tariff,
-        price_per_kwh = pricePerKwh,
-        total_cost_dkk = (decimal)kwh * pricePerKwh
-    });
-}
-
-Console.WriteLine("Tool execution functions ready");
-
-#!markdown
-
-### Step 4: Implementer The Agentic Loop
-
-**Din opgave:** Udfyld TODO-sektionerne i loopet nedenfor.
-
-#!csharp
-
-using Anthropic.SDK;
-
-async Task<string> RunAgent(string userQuery, string apiKey)
-{
-    var client = new AnthropicClient(apiKey);
-
-    var messages = new List<Message>
-    {
-        new Message(RoleType.User, userQuery)
-    };
-
-    var systemPrompt = """
-        Du er en hjælpsom EV-ladnings assistent for ChargeSmart netværket i København.
-        Du hjælper brugere med at finde ladere, tjekke tilgængelighed og beregne omkostninger.
-        Svar altid på dansk. Vær venlig og informativ.
-        """;
-
-    const int maxIterations = 10;
-    var iterations = 0;
-
-    while (iterations < maxIterations)
-    {
-        iterations++;
-        Console.WriteLine($"\n--- Iteration {iterations} ---");
-
-        var request = new MessageRequest
-        {
-            Model = "claude-sonnet-4-20250514",
-            MaxTokens = 1024,
-            System = systemPrompt,
-            Messages = messages,
-            Tools = tools
-        };
-
-        var response = await client.Messages.CreateAsync(request);
-
-        Console.WriteLine($"Stop reason: {response.StopReason}");
-
-        // TODO: Tjek om response indeholder tool calls
-        // Hint: response.Content kan indeholde ToolUseContent objekter
-
-        if (response.StopReason == "tool_use")
-        {
-            // Tilføj assistant response til messages
-            messages.Add(new Message(RoleType.Assistant, response.Content));
-
-            // TODO: Loop gennem tool calls og eksekver dem
-            // 1. Find alle ToolUseContent i response.Content
-            // 2. For hver tool call: kald ExecuteTool(name, input)
-            // 3. Opret ToolResultContent med resultat
-            // 4. Tilføj tool results som User message
-
-            var toolResults = new List<ContentBlock>();
-
-            foreach (var content in response.Content)
-            {
-                if (content is ToolUseContent toolUse)
-                {
-                    Console.WriteLine($"Executing tool: {toolUse.Name}");
-
-                    // TODO: Eksekver tool og tilføj resultat
-                    // var result = ExecuteTool(toolUse.Name, toolUse.Input);
-                    // toolResults.Add(new ToolResultContent { ... });
-
-                    throw new NotImplementedException("Implementer tool execution!");
-                }
-            }
-
-            messages.Add(new Message(RoleType.User, toolResults));
-        }
-        else
-        {
-            // Ingen flere tool calls - returner final response
-            var textContent = response.Content
-                .OfType<TextContent>()
-                .FirstOrDefault();
-
-            return textContent?.Text ?? "Ingen respons";
-        }
-    }
-
-    return "Max iterations reached";
-}
-
-Console.WriteLine("Agent function defined - klar til test!");
-
-#!markdown
-
-### Løsning (fold ud hvis du sidder fast)
-
-<details>
-<summary>Klik for at se løsningen</summary>
-
-```csharp
-foreach (var content in response.Content)
-{
-    if (content is ToolUseContent toolUse)
-    {
-        Console.WriteLine($"Executing tool: {toolUse.Name}");
-
-        var result = ExecuteTool(toolUse.Name, toolUse.Input);
-        Console.WriteLine($"Result: {result}");
-
-        toolResults.Add(new ToolResultContent
-        {
-            ToolUseId = toolUse.Id,
-            Content = result
-        });
-    }
-}
-```
-
-</details>
-
-#!markdown
-
-### Step 5: Test din Agent
-
-**Vigtigt:** Du skal have en Anthropic API key. Sæt den som miljøvariabel eller indsæt direkte (kun til test!).
-
-#!csharp
-
-// Hent API key fra miljøvariabel
-var apiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY");
-
-if (string.IsNullOrEmpty(apiKey))
-{
-    Console.WriteLine("⚠️ ANTHROPIC_API_KEY ikke sat!");
-    Console.WriteLine("Sæt den med: Environment.SetEnvironmentVariable(\"ANTHROPIC_API_KEY\", \"din-key\")");
-}
-else
-{
-    Console.WriteLine("✅ API key fundet");
-}
-
-#!csharp
-
-// Test agenten (kræver API key)
-if (!string.IsNullOrEmpty(apiKey))
-{
-    var query = "Find en hurtig lader i nærheden af Nørrebro der er ledig. Hvad koster det at lade 40 kWh nu?";
-    Console.WriteLine($"User: {query}\n");
-
-    var response = await RunAgent(query, apiKey);
-    Console.WriteLine($"\nAssistant: {response}");
-}
-
-#!markdown
-
-### Checkpoint
-
-Du skulle se agenten:
-1. Kalde `search_chargers` for at finde ladere
-2. Kalde `get_charger_status` for at tjekke tilgængelighed
-3. Kalde `calculate_charging_cost` for at beregne pris
-4. Returnere et samlet, venligt svar på dansk
-
----
+Nu har vi alle byggeklodserne:
+- **Agent** (bygget i første øvelse) - Forstår loopet
+- **MCP** (bygget i anden øvelse) - ChargeSmart tools
+- **Skills** (bygget i tredje øvelse) - Domæneviden
+
+Lad os kombinere dem!
 
 #!markdown
 
