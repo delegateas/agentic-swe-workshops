@@ -178,10 +178,11 @@ JetBrains' benchmark - evaluerer hele engineering lifecycle på Spring-projekter
 ### Men pas på: Benchmark ≠ virkelighed
 
 METR-studie (juli 2025):
-- Erfarne udviklere *troede* de var **20% hurtigere** med AI
-- Objektive tests viste de var **19% langsommere**
+- Erfarne udviklere *troede* de var **20% hurtigere** med AI, når objektive tests viste de var **19% langsommere**
 
-**48%** af AI-genereret kode har sikkerhedssårbarheder.
+Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622)):
+- Mennesker uden AI: **~50%** sårbar kode
+- Mennesker MED AI: **~64%** — faktisk *værre*!
 
 #!markdown
 
@@ -207,7 +208,9 @@ Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
 **"Code trust bottleneck"**: AI genererer kode hurtigt, men mennesker skal stadig verificere alt.
 
-**48%** af AI-genereret kode har sikkerhedssårbarheder. *"AI er bogstavelig, ikke kreativ — arkitektur og design betyder mere end nogensinde."*
+Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622)):
+- Mennesker uden AI: **~50%** sårbar kode
+- Mennesker MED AI: **~64%** — faktisk *værre*! *"AI er bogstavelig, ikke kreativ — arkitektur og design betyder mere end nogensinde."*
 
 **Stanford-studie**: 20% fald i ansættelser af junior-udviklere (22-25 år) siden 2022.
 
