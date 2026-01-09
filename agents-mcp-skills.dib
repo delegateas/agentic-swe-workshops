@@ -109,7 +109,20 @@ Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
 
 — Tariq Shaukat, Sonar CEO ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
 
-## Hvordan måler vi AI-agenter? (pr. 9. januar 2026)
+## Hvorfor kan LLM'er kode så godt nu?
+
+**Kode har indbygget feedback.** Til forskel fra "god tekst" kan vi objektivt måle om kode virker:
+- Kompilerer det? ✓/✗
+- Består tests? ✓/✗
+- Løser det opgaven? ✓/✗
+
+Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
+
+<img src="images/ai-training-loop.svg" alt="AI Træningsloop" width="600" style="max-width: 100%;">
+
+**Resultat:** "Extended thinking" — modeller der tænker før de svarer (o1, o3, Claude thinking mode)
+
+## Hvordan måler vi AI-agenter/LLM'er iht. kodning? (pr. 9. januar 2026)
 
 Tre nøgle-benchmarks viser hvor langt vi er kommet:
 
@@ -145,7 +158,7 @@ METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 | 2 | GPT-5.1 Codex Max | ~2.9 timer |
 | 3 | GPT-5 | ~2.3 timer |
 
-<img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
+<br><img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
 
 **Nøgletal:**
 - Tidshorisonten **fordobles hver 7. måned** (konsistent over 6 år)
@@ -186,37 +199,7 @@ Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622))
 
 #!markdown
 
-## Hvorfor kan LLM'er kode så godt nu?
-
-**Kode har indbygget feedback.** Til forskel fra "god tekst" kan vi objektivt måle om kode virker:
-- Kompilerer det? ✓/✗
-- Består tests? ✓/✗
-- Løser det opgaven? ✓/✗
-
-Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
-
-<img src="images/ai-training-loop.svg" alt="AI Træningsloop" width="600" style="max-width: 100%;">
-
-**Resultat:** "Extended thinking" — modeller der tænker før de svarer (o1, o3, Claude thinking mode)
-
-#!markdown
-
-## Den virkelige udfordring: Mindset-skiftet
-
-> *"Productivity afhænger lige så meget af mindset og samarbejde som af værktøjer og teknologi."*
-> — McKinsey
-
-**"Code trust bottleneck"**: AI genererer kode hurtigt, men mennesker skal stadig verificere alt.
-
-Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622)):
-- Mennesker uden AI: **~50%** sårbar kode
-- Mennesker MED AI: **~64%** — faktisk *værre*! *"AI er bogstavelig, ikke kreativ — arkitektur og design betyder mere end nogensinde."*
-
-**Stanford-studie**: 20% fald i ansættelser af junior-udviklere (22-25 år) siden 2022.
-
-Succesfulde teams: *"Behandler hver sprint som en chance for at eksperimentere og lære."*
-
-## Arkitekturen: "It's that simple"
+## Agentarkitekturen: "It's that simple"
 
 <img src="agent-pattern.png" alt="Agent Pattern" width="600" style="max-width: 100%;">
 
