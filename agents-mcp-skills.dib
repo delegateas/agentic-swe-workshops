@@ -139,12 +139,17 @@ Tre nøgle-benchmarks viser hvor langt vi er kommet:
 
 METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
+| # | Model | 50% Tidshorisont |
+|---|-------|------------------|
+| 1 | Claude Opus 4.5 | ~4.8 timer |
+| 2 | GPT-5.1 Codex Max | ~2.9 timer |
+| 3 | GPT-5 | ~2.3 timer |
+
 <img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
 
 **Nøgletal:**
 - Tidshorisonten **fordobles hver 7. måned** (konsistent over 6 år)
-- Bedste modeller: ~1 times opgaver med høj succes
-- <10% succes på opgaver >4 timer
+- <10% succes på opgaver >4 timer (men Opus 4.5 nærmer sig!)
 
 **Hvis trenden fortsætter:**
 - 2-4 år: ugelange opgaver
@@ -160,9 +165,9 @@ JetBrains' benchmark - evaluerer hele engineering lifecycle på Spring-projekter
 
 | # | Agent | Model | Score |
 |---|-------|-------|-------|
-| 1 | Junie CLI | Claude Opus 4.5 | 68.9 |
-| 2 | Claude Code | Claude Opus 4.5 | 68.0 |
-| 3 | Junie CLI | Claude Sonnet 4.5 | 68.0 |
+| 1 | Junie CLI 533.2 | Claude Opus 4.5 | 68.9 |
+| 2 | Claude Code 2.0.55 | Claude Opus 4.5 | 68.0 |
+| 3 | Junie CLI 496.3-prototype | Claude Sonnet 4.5 | 68.0 |
 
 *Bemærk: Alle top 3 bruger Claude-modeller!*
 
