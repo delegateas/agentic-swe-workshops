@@ -104,17 +104,79 @@ Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
 *15 minutter*
 
 > *"Vi er forbi kodegenerering som flaskehalsen. Udfordringen nu er klarhed og tillid."*
+
 > De fleste tech. startups er AI-native med < 10% af skreven af LLM'er. Store virksomheder tester stadig med PoC-projekter.
 
-> — Tariq Shaukat, Sonar CEO ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
+— Tariq Shaukat, Sonar CEO ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
 
-## Konvergensen: Alle værktøjer går samme vej
+## Hvordan måler vi AI-agenter? (pr. 9. januar 2026)
 
-- **GitHub Copilot** - MCP support, agent mode, skills
-- **Cursor** - Composer med multi-file edits
-- **Claude Code** - CLI-baseret agent med fuld autonomi
-- **Windsurf** - Cascade flows
-- **Codex, Antigravity, Kiro, Gemini, Grok, Amp, ...**
+Tre nøgle-benchmarks viser hvor langt vi er kommet:
+
+### 1. SWE-bench: Løs rigtige GitHub issues
+
+**SWE-bench Verified** (500 human-validerede issues):
+
+| # | Model | Score |
+|---|-------|-------|
+| 1 | Claude Opus 4.5 | 80.9% |
+| 2 | GPT-5.2 | 75.4% |
+| 3 | Claude Opus 4.1 | 74.5% |
+
+**SWE-bench Pro** (1865 sværere issues, nye repos):
+
+| # | Agent | Score |
+|---|-------|-------|
+| 1 | Claude Opus 4.5 | 45.9% |
+| 2 | Claude Sonnet 4.5 | 43.6% |
+| 3 | Gemini 3 Pro Preview | 43.3% |
+
+[swebench.com](https://www.swebench.com/)
+
+---
+
+### 2. METR: Hvor lang tid kan AI arbejde selvstændigt?
+
+METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
+
+<img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
+
+**Nøgletal:**
+- Tidshorisonten **fordobles hver 7. måned** (konsistent over 6 år)
+- Bedste modeller: ~1 times opgaver med høj succes
+- <10% succes på opgaver >4 timer
+
+**Hvis trenden fortsætter:**
+- 2-4 år: ugelange opgaver
+- Årtiet ud: månedlange projekter
+
+[metr.org](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/)
+
+---
+
+### 3. Terminal-Bench: CLI-agent operationer
+
+Måler AI's evne til at navigere terminal, kompilere, konfigurere miljøer, køre værktøjer.
+
+| # | Agent | Score |
+|---|-------|-------|
+| 1 | Droid (Opus 4.1) | 58.8% |
+| 2 | Droid (GPT-5) | 52.5% |
+| 3 | Droid (Sonnet 4) | 50.5% |
+
+*Claude Code med Opus: 43.2% - agent-scaffolding matters!*
+
+[tbench.ai](https://www.tbench.ai/leaderboard)
+
+---
+
+### Men pas på: Benchmark ≠ virkelighed
+
+METR-studie (juli 2025):
+- Erfarne udviklere *troede* de var **20% hurtigere** med AI
+- Objektive tests viste de var **19% langsommere**
+
+**48%** af AI-genereret kode har sikkerhedssårbarheder.
 
 #!markdown
 
@@ -130,28 +192,6 @@ Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 <img src="images/ai-training-loop.svg" alt="AI Træningsloop" width="600" style="max-width: 100%;">
 
 **Resultat:** "Extended thinking" — modeller der tænker før de svarer (o1, o3, Claude thinking mode)
-
-#!markdown
-
-## Hvordan måler vi? (SWE-bench, METR)
-
-### SWE-bench: Rigtige GitHub issues
-| Benchmark | Hvad det måler | Bedste resultat (jan 2026) |
-|-----------|----------------|----------------------------|
-| SWE-bench Verified | Løs rigtige GitHub issues | Claude Opus 4.5: **80.9%** |
-| SWE-bench Pro | Sværere, usete repositories | **~17-23%** |
-
-### METR: Hvor lang tid kan AI arbejde selvstændigt?
-
-<img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
-
-Tid-horisonten **fordobles hver 7. måned**. Hvis trenden fortsætter: ugelange opgaver inden 2028.
-
-### Men pas på: Benchmark ≠ virkelighed
-
-METR-studie (juli 2025):
-- Erfarne udviklere *troede* de var **20% hurtigere** med AI
-- Objektive tests viste de var **19% langsommere**
 
 #!markdown
 
