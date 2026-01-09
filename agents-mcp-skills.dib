@@ -154,19 +154,19 @@ METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
 ---
 
-### 3. Terminal-Bench: CLI-agent operationer
+### 3. DPAI Arena: Full developer workflow
 
-Måler AI's evne til at navigere terminal, kompilere, konfigurere miljøer, køre værktøjer.
+JetBrains' benchmark - evaluerer hele engineering lifecycle på Spring-projekter (140+ opgaver).
 
-| # | Agent | Score |
-|---|-------|-------|
-| 1 | Droid (Opus 4.1) | 58.8% |
-| 2 | Droid (GPT-5) | 52.5% |
-| 3 | Droid (Sonnet 4) | 50.5% |
+| # | Agent | Model | Score |
+|---|-------|-------|-------|
+| 1 | Junie CLI | Claude Opus 4.5 | 68.9 |
+| 2 | Claude Code | Claude Opus 4.5 | 68.0 |
+| 3 | Junie CLI | Claude Sonnet 4.5 | 68.0 |
 
-*Claude Code med Opus: 43.2% - agent-scaffolding matters!*
+*Bemærk: Alle top 3 bruger Claude-modeller!*
 
-[tbench.ai](https://www.tbench.ai/leaderboard)
+[dpaia.dev](https://dpaia.dev/)
 
 ---
 
