@@ -39,7 +39,7 @@ En praktisk workshop hvor vi udforsker den nye verden af **agentic software engi
 
 Lige denne planche fra er meget relevant mht. dagens seance: [How LLMs Learn: The Three Stages](https://martinrl.github.io/presentations/what-are-llms-and-agents/index.html#14)
 
-![LLMs-14](images/LLMs-14.png)
+<img src="images/LLMs-14.png" alt="LLMs-14" width="600" style="max-width: 100%;">
 
 ---
 
@@ -103,19 +103,10 @@ Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
 # Det agentiske landskab – overblik
 *15 minutter*
 
-## Hvor vi er nu (januar 2026)
-
-| Metrik | Tal |
-|--------|-----|
-| AI-genereret/assisteret kode | **41%** af al kode |
-| Udviklere der bruger AI ugentligt | **65%** |
-| Udviklere med 3+ AI-værktøjer | **59%** |
-| AI-kode med sikkerhedssårbarheder | **48%** |
-
 > *"Vi er forbi kodegenerering som flaskehalsen. Udfordringen nu er klarhed og tillid."*
-> — Tariq Shaukat, Sonar CEO ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
+> De fleste tech. startups er AI-native med < 10% af skreven af LLM'er. Store virksomheder tester stadig med PoC-projekter.
 
-**Startups** bevæger sig hurtigst. Store virksomheder tester stadig med PoC-projekter.
+> — Tariq Shaukat, Sonar CEO ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
 
 ## Konvergensen: Alle værktøjer går samme vej
 
@@ -127,7 +118,7 @@ Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
 
 #!markdown
 
-## Hvorfor kan LLM'er kode nu?
+## Hvorfor kan LLM'er kode så godt nu?
 
 **Kode har indbygget feedback.** Til forskel fra "god tekst" kan vi objektivt måle om kode virker:
 - Kompilerer det? ✓/✗
@@ -136,7 +127,7 @@ Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
 
 Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
-![AI Træningsloop](images/ai-training-loop.svg)
+<img src="images/ai-training-loop.svg" alt="AI Træningsloop" width="600" style="max-width: 100%;">
 
 **Resultat:** "Extended thinking" — modeller der tænker før de svarer (o1, o3, Claude thinking mode)
 
@@ -152,7 +143,7 @@ Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
 ### METR: Hvor lang tid kan AI arbejde selvstændigt?
 
-![METR Tidslinje](images/metr-timeline.svg)
+<img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
 
 Tid-horisonten **fordobles hver 7. måned**. Hvis trenden fortsætter: ugelange opgaver inden 2028.
 
@@ -179,7 +170,7 @@ Succesfulde teams: *"Behandler hver sprint som en chance for at eksperimentere o
 
 ## Arkitekturen: "It's that simple"
 
-![Agent Pattern](agent-pattern.png)
+<img src="agent-pattern.png" alt="Agent Pattern" width="600" style="max-width: 100%;">
 
 ---
 
@@ -194,11 +185,11 @@ Succesfulde teams: *"Behandler hver sprint som en chance for at eksperimentere o
 
 **Problemet:** Hver LLM-integration kræver custom connectors
 
-![MCP Problem](images/mcp-problem.svg)
+<img src="images/mcp-problem.svg" alt="MCP Problem" width="600" style="max-width: 100%;">
 
 **Løsningen:** Én standardprotokol
 
-![MCP Solution](images/mcp-solution.svg)
+<img src="images/mcp-solution.svg" alt="MCP Solution" width="600" style="max-width: 100%;">
 
 ### Protokol Basics
 
