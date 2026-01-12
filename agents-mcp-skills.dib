@@ -103,11 +103,19 @@ Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
 # Det agentiske landskab – overblik
 *15 minutter*
 
+<img src="images/Orloff-1600x1067.webp" alt="Professor Orloff" width="600" style="max-width: 100%;">
+
+> An LLM is just a brain in a jar. 🧠
+
+— [Simon Maple](https://www.linkedin.com/in/simonmaple/), Head of Developer Relations @ Tessl ([AI Native podcast](https://open.spotify.com/episode/1HYcUlgkCa9VwvVfuy3fyx?nd=1&dlsi=a77f69fabf8b46b1))
+<br>
+
+
 > *"Vi er forbi kodegenerering som flaskehalsen. Udfordringen nu er klarhed og tillid."*
 
 > De fleste tech. startups er AI-native med < 10% af skreven af LLM'er. Store virksomheder tester stadig med PoC-projekter.
 
-— Tariq Shaukat, Sonar CEO ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
+— [Tariq Shaukat](https://www.linkedin.com/in/tariq-shaukat/), CEO @ Sonar ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
 
 ## Hvorfor kan LLM'er kode så godt nu?
 
