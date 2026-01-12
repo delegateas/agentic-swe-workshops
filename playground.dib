@@ -199,7 +199,7 @@ Hele loopet er:
 async Task<string> RunAgent(string userMessage, List<Tool> tools)
 {
     var client = new OllamaApiClient("http://localhost:11434");
-    client.SelectedModel = "llama3.1:8b";
+    client.SelectedModel = selectedModelName ?? "llama3.1:8b";
 
     var messages = new List<Message>
     {
@@ -226,7 +226,7 @@ async Task<string> RunAgent(string userMessage, List<Tool> tools)
         // Send to LLM
         var request = new ChatRequest
         {
-            Model = "llama3.1:8b",
+            Model = selectedModelName ?? "llama3.1:8b",
             Messages = messages,
             Tools = tools,
             Stream = false
