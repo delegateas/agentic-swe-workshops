@@ -35,7 +35,7 @@ Exercises use a fictional EV charging network in Copenhagen:
 ## Key NuGet Packages Used
 
 The workshop notebook references:
-- `OllamaSharp` (5.4.12) - Local LLM inference via Ollama
+- `OllamaSharp` (5.1.3) - Local LLM inference via Ollama
 - `ModelContextProtocol` (0.1.0-preview.15) - MCP server SDK
 - `Microsoft.Extensions.Hosting` (8.0.0) - Dependency injection
 

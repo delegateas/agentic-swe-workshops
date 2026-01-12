@@ -1,6 +1,6 @@
 #!meta
 
-{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp","languageName":"csharp"},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
 
 #!markdown
 
@@ -53,8 +53,7 @@ catch (Exception ex)
 
 #!csharp
 
-#r "nuget: System.Text.Json"
-#r "nuget: OllamaSharp, 5.4.12"
+#r "nuget: OllamaSharp, 5.1.3"
 
 using OllamaSharp;
 using OllamaSharp.Models;
@@ -75,7 +74,7 @@ var chat = new Chat(ollama);
 
 Console.WriteLine("Sender test besked...\n");
 
-await foreach (var token in chat.SendAsync("Sig 'Hej verden!' på dansk."))
+await foreach (var token in chat.SendAsync("Sig 'Hello agentic world!' på dansk."))
 {
     Console.Write(token);
 }
@@ -321,4 +320,3 @@ Brug denne sektion til at eksperimentere med:
 #!csharp
 
 // Din eksperimentering her...
-

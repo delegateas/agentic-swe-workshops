@@ -316,7 +316,7 @@ catch (Exception ex)
 
 #!csharp
 
-#r "nuget: OllamaSharp, 5.4.12"
+#r "nuget: OllamaSharp, 5.1.3"
 
 using OllamaSharp;
 using OllamaSharp.Models;
