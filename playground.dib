@@ -28,21 +28,11 @@ winget install Ollama.Ollama
 ollama serve
 ```
 
-**Vælg din model** (begge understøtter tool calling):
-
-| Model | Størrelse | Beskrivelse |
-|-------|-----------|-------------|
-| `llama3.1:8b` | 4,9 GB | Hurtig download, god til workshop |
-| `qwen3-coder:30b` | 17,3 GB | Bedre til kodning, kræver mere RAM |
-
-Pull den model du vil bruge:
+Pull modellen:
 ```powershell
 ollama pull llama3.1:8b
-# ELLER
-ollama pull qwen3-coder:30b
 ```
-
-☝🏻 Kan også udføres i Ollama GUI.
+👆🏻 Kan også udføres i Ollama GUI
 
 #!csharp
 
@@ -51,8 +41,7 @@ using System.Net.Http;
 
 var httpClient = new HttpClient();
 
-// 👇 VÆLG DIN MODEL HER:
-string selectedModelName = "llama3.1:8b";  // eller "qwen3-coder:30b"
+string selectedModelName = "llama3.1:8b";
 
 try
 {
