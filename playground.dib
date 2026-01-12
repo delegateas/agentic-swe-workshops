@@ -33,13 +33,25 @@ ollama list
 
 // Test: Kan vi nå Ollama?
 using System.Net.Http;
+using System.Text.Json;
 
 var httpClient = new HttpClient();
+string selectedModelName = null;
+
 try
 {
     var response = await httpClient.GetStringAsync("http://localhost:11434/api/tags");
     Console.WriteLine("Ollama kører! Installerede modeller:");
     Console.WriteLine(response);
+
+    // Parse and get first model
+    var json = JsonDocument.Parse(response);
+    var models = json.RootElement.GetProperty("models");
+    if (models.GetArrayLength() > 0)
+    {
+        selectedModelName = models[0].GetProperty("name").GetString();
+        Console.WriteLine($"\nValgt model: {selectedModelName}");
+    }
 }
 catch (Exception ex)
 {
@@ -68,7 +80,7 @@ Console.WriteLine("OllamaSharp loaded!");
 #!csharp
 
 var ollama = new OllamaApiClient("http://localhost:11434");
-ollama.SelectedModel = "llama3.1:8b";
+ollama.SelectedModel = selectedModelName ?? "llama3.1:8b";
 
 var chat = new Chat(ollama);
 
