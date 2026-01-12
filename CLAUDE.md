@@ -4,44 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repository contains workshop materials for agentic software engineering practices. Workshops are designed for hands-on learning with Polyglot Notebooks (.dib files).
+This repository contains workshop materials for agentic software engineering practices. Workshops are designed for hands-on learning with Polyglot Notebooks (.dib files). Primary language is C# with .NET Interactive kernel.
+
+## Prerequisites
+
+- .NET 8 SDK or later
+- VS Code with Polyglot Notebooks extension (or full .NET Extension Pack)
+- **Ollama** for local LLM inference:
+  ```bash
+  winget install Ollama.Ollama
+  ollama pull llama3.1:8b
+  ollama serve  # Start the server
+  ```
 
 ## Workshop: Agents, MCP & Skills
 
-The main workshop (`agents-mcp-skills.dib`) covers:
-- **Intro til Polyglot Notebooks** (5 min)
-- **Det agentiske landskab** (15 min) - The 2024-2026 evolution
-- **MCP-servere** (50 min) - Model Context Protocol theory + hands-on
-- **Skills** (45 min) - Agent skills for GitHub Copilot/Claude Code
-- **Byg en Agent** (55 min) - Implementing the agentic loop
-- **Integration** (25 min) - Wiring MCP + Skills + Agent together
+The main workshop (`agents-mcp-skills.dib`) is a 3.5-hour hands-on session covering:
+1. **Byg en Agent** - Implementing the agentic loop (~200 lines of code)
+2. **MCP-servere** - Model Context Protocol for standardized tool access
+3. **Skills** - Reusable domain knowledge for AI agents
+4. **Integration** - Wiring all components together
 
-Domain: Fictional EV charging network (ChargeSmart) in Copenhagen.
+### Domain: ChargeSmart EV Network
 
-## Directory Structure
+Exercises use a fictional EV charging network in Copenhagen:
+- 10 charging stations (IDs: CPH-001 through CPH-010)
+- Power levels: slow (7kW), fast (50kW), ultra-fast (150kW)
+- Tariff structure: off-peak (1.50 DKK/kWh), normal (2.50 DKK/kWh), peak (4.00 DKK/kWh)
 
-```
-agentic-swe-workshops/
-├── CLAUDE.md
-├── LICENSE
-├── README.md
-├── agents-mcp-skills.dib        # Main workshop notebook (3.5 hours)
-├── agenda.md                    # Calendar invite agenda (Danish)
-├── agent-pattern.png            # Architecture diagram
-├── github-copilot-icon.png      # Icon asset
-├── images/                      # Mermaid diagrams
-│   ├── *.mmd                    # Source files (NEVER delete these!)
-│   └── *.svg                    # Rendered (regenerate with mermaid-cli)
-└── research/                    # Background research materials
-```
+## Key NuGet Packages Used
 
-## Technology Stack
-
-- **Notebook Format**: Polyglot Notebooks (.dib files)
-- **Primary Language**: C#
-- **Runtime**: .NET Interactive kernel
-- **Editor**: VS Code with Polyglot Notebooks extension
-- **Version Control**: Git with main branch `main`
+The workshop notebook references:
+- `OllamaSharp` (5.4.12) - Local LLM inference via Ollama
+- `ModelContextProtocol` (0.1.0-preview.15) - MCP server SDK
+- `Microsoft.Extensions.Hosting` (8.0.0) - Dependency injection
 
 ## Polyglot Notebook Format
 
@@ -50,7 +46,7 @@ Each `.dib` file contains cell types:
 - `#!markdown` - Documentation cells
 - `#!csharp` - C# code cells (executed in shared kernel session)
 
-Variables persist across cells within a session.
+Variables persist across cells within a session. Run cells with Shift+Enter (run and advance) or Ctrl+Enter (run and stay).
 
 ## Mermaid Diagrams
 
