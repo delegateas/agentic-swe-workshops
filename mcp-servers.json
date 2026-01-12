@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "file-server": {
+      "command": "dotnet",
+      "args": ["run", "--project", "McpFileServer"],
+      "transportType": "stdio"
+    }
+  }
+}

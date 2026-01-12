@@ -321,13 +321,97 @@ else
 
 ---
 
-## 4. Experimentation Zone
+## 4. MCP Servers
+
+#!markdown
+
+### 4.1 Hvad er MCP?
+
+**Model Context Protocol (MCP)** er en åben standard fra Anthropic der standardiserer
+hvordan AI-agenter kommunikerer med eksterne tools.
+
+I stedet for at definere tools inline (som i Section 2), kan tools:
+- Leve i separate processer (MCP servere)
+- Opdages dynamisk af agenten
+- Deles på tværs af forskellige agenter
+
+```
+┌─────────────┐     JSON-RPC/stdio     ┌─────────────┐
+│   Agent     │◄─────────────────────►│ MCP Server  │
+│  (notebook) │                        │ (tools)     │
+└─────────────┘                        └─────────────┘
+```
+
+#!markdown
+
+### 4.2 MCP Server koden
+
+Åbn `McpFileServer/Program.cs` - det er samme `create_file` tool, men nu eksternaliseret:
+
+- `[McpServerToolType]` - marker klassen som tool provider
+- `[McpServerTool]` - marker metoden som et tool
+- `[Description]` - beskrivelse som LLM'en kan se
+
+#!csharp
+
+// Load tools fra MCP server
+var mcpTools = await OllamaSharp.Tools.GetFromMcpServers("mcp-servers.json");
+
+Console.WriteLine($"Fundet {mcpTools.Length} tools fra MCP server:");
+foreach (var tool in mcpTools)
+{
+    Console.WriteLine($"  - {tool}");
+}
+
+#!markdown
+
+### 4.3 Brug MCP Tools med Agent
+
+#!csharp
+
+var mcpChat = new Chat(ollama);
+
+Console.WriteLine("Sender besked med MCP tools...\n");
+
+await foreach (var token in mcpChat.SendAsync(
+    "Lav en C# fil der hedder 'HelloMcpWorld.cs' og printer 'Hello MCP World!' til konsollen.",
+    mcpTools))
+{
+    Console.Write(token);
+}
+
+Console.WriteLine("\n\nDone!");
+
+#!markdown
+
+### 4.4 Verificer
+
+#!csharp
+
+var mcpFilePath = @"HelloMcpWorld.cs";
+
+if (File.Exists(mcpFilePath))
+{
+    Console.WriteLine("SUCCESS! MCP tool created the file:");
+    Console.WriteLine(new string('-', 40));
+    Console.WriteLine(File.ReadAllText(mcpFilePath));
+    Console.WriteLine(new string('-', 40));
+}
+else
+{
+    Console.WriteLine("File was NOT created. Check output above.");
+}
+
+#!markdown
+
+---
+
+## 5. Experimentation Zone
 
 Brug denne sektion til at eksperimentere med:
 - Forskellige prompts
-- Flere tools
-- Fejlhåndtering
-- Edge cases
+- Flere MCP tools
+- Egne MCP servere
 
 #!csharp
 
