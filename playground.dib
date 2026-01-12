@@ -232,8 +232,12 @@ async Task<string> RunAgent(string userMessage, List<Tool> tools)
             Stream = false
         };
 
-        var response = await client.ChatAsync(request);
-        var assistantMessage = response.Message;
+        ChatResponseStream? response = null;
+        await foreach (var chunk in client.ChatAsync(request))
+        {
+            response = chunk;
+        }
+        var assistantMessage = response?.Message;
         messages.Add(assistantMessage);
 
         // Check for tool calls
