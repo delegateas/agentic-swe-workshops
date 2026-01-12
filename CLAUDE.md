@@ -8,7 +8,7 @@ This repository contains workshop materials for agentic software engineering pra
 
 ## Prerequisites
 
-- .NET 8 SDK or later
+- .NET 9 SDK (required for OllamaSharp 5.x)
 - VS Code with Polyglot Notebooks extension (or full .NET Extension Pack)
 - **Ollama** for local LLM inference:
   ```bash

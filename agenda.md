@@ -24,7 +24,7 @@ Installer venligst inden workshoppen:
 
 - VS Code
 - Polyglot Notebooks extension (men .NET Extension Pack er nemmest)
-- .NET 8 SDK eller nyere
+- .NET 9 SDK (påkrævet for OllamaSharp 5.x)
 - **Ollama** – lokal LLM inference
   - Installer: `winget install Ollama.Ollama`
   - Download model: `ollama pull llama3.1:8b`
