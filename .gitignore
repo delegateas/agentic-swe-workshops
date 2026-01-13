@@ -3,3 +3,8 @@ tmpclaude*
 
 # Agent-generated files
 HelloAgentWorld.cs
+HelloMcpWorld.cs
+
+# Build output
+bin/
+obj/
