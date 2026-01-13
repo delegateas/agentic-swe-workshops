@@ -382,7 +382,7 @@ Console.WriteLine("MCP Client packages loaded!");
 #!csharp
 
 // Start MCP server og hent tools
-var mcpClient = await McpClientFactory.CreateAsync(
+var mcpClient = await McpClient.CreateAsync(
     new StdioClientTransport(new()
     {
         Command = "dotnet",
