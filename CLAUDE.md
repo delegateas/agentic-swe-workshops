@@ -35,9 +35,12 @@ Exercises use a fictional EV charging network in Copenhagen:
 ## Key NuGet Packages Used
 
 The workshop notebook references:
-- `OllamaSharp` (5.1.3) - Local LLM inference via Ollama
-- `ModelContextProtocol` (0.1.0-preview.15) - MCP server SDK
+- `OllamaSharp` (5.1.3) - Local LLM inference via Ollama (implements IChatClient)
+- `ModelContextProtocol` (0.5.0-preview.1) - MCP server & client SDK
+- `Microsoft.Extensions.AI` (9.1.0-preview) - AI abstraction layer (IChatClient, AITool)
 - `Microsoft.Extensions.Hosting` (8.0.0) - Dependency injection
+
+**Note:** OllamaSharp implements `IChatClient` from Microsoft.Extensions.AI, enabling seamless MCP tool integration via `ChatClientBuilder.UseFunctionInvocation()`.
 
 ## Polyglot Notebook Format
 

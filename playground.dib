@@ -352,39 +352,86 @@ I stedet for at definere tools inline (som i Section 2), kan tools:
 - `[McpServerTool]` - marker metoden som et tool
 - `[Description]` - beskrivelse som LLM'en kan se
 
+#!markdown
+
+### 4.3 MCP Client Setup
+
+OllamaSharp har ikke indbygget MCP support, men det implementerer `IChatClient` fra
+**Microsoft.Extensions.AI** - og det har MCP SDK'en fuld support for!
+
+```
+OllamaApiClient (IChatClient) ←→ ChatClientBuilder ←→ McpClientTool
+                                  .UseFunctionInvocation()
+```
+
 #!csharp
 
-// Load tools fra MCP server
-var mcpTools = await OllamaSharp.Tools.GetFromMcpServers("mcp-servers.json");
+// MCP Client packages
+#r "nuget: ModelContextProtocol, 0.5.0-preview.1"
+#r "nuget: Microsoft.Extensions.AI, 9.1.0-preview.1.25064.3"
 
-Console.WriteLine($"Fundet {mcpTools.Length} tools fra MCP server:");
+using Microsoft.Extensions.AI;
+using ModelContextProtocol.Client;
+
+Console.WriteLine("MCP Client packages loaded!");
+
+#!markdown
+
+### 4.4 Opret forbindelse til MCP Server
+
+#!csharp
+
+// Start MCP server og hent tools
+var mcpClient = await McpClientFactory.CreateAsync(
+    new StdioClientTransport(new()
+    {
+        Command = "dotnet",
+        Arguments = ["run", "--project", "McpFileServer"],
+        Name = "file-server"
+    }));
+
+var mcpTools = await mcpClient.ListToolsAsync();
+
+Console.WriteLine($"Fundet {mcpTools.Count} tools fra MCP server:");
 foreach (var tool in mcpTools)
 {
-    Console.WriteLine($"  - {tool}");
+    Console.WriteLine($"  - {tool.Name}: {tool.Description}");
 }
 
 #!markdown
 
-### 4.3 Brug MCP Tools med Agent
+### 4.5 Brug MCP Tools med IChatClient
+
+OllamaApiClient implementerer `IChatClient`, så vi kan bruge den direkte med MCP tools!
+`UseFunctionInvocation()` håndterer automatisk tool-kald og -resultater.
 
 #!csharp
 
-var mcpChat = new Chat(ollama);
+// OllamaApiClient IS an IChatClient - wrap it with function invocation
+IChatClient chatClient = new ChatClientBuilder(ollama)
+    .UseFunctionInvocation()
+    .Build();
 
 Console.WriteLine("Sender besked med MCP tools...\n");
 
-await foreach (var token in mcpChat.SendAsync(
-    "Lav en C# fil der hedder 'HelloMcpWorld.cs' og printer 'Hello MCP World!' til konsollen.",
-    mcpTools))
+var messages = new List<ChatMessage>
 {
-    Console.Write(token);
+    new(ChatRole.User, "Lav en C# fil der hedder 'HelloMcpWorld.cs' og printer 'Hello MCP World!' til konsollen.")
+};
+
+// GetStreamingResponseAsync med MCP tools - tool calls håndteres automatisk!
+await foreach (var update in chatClient.GetStreamingResponseAsync(
+    messages,
+    new() { Tools = [.. mcpTools] }))
+{
+    Console.Write(update.Text);
 }
 
 Console.WriteLine("\n\nDone!");
 
 #!markdown
 
-### 4.4 Verificer
+### 4.6 Verificer
 
 #!csharp
 
