@@ -497,7 +497,7 @@ Når du spørger Copilot om noget, tjekker den om en skill matcher - og indlæse
 > **Vigtig note:** VS Code Skills er eksperimentelt (v1.108+). Hvis det ikke virker, tjek:
 > - Er du på VS Code 1.108 eller nyere? (`Help > About`)
 > - Er Copilot-udvidelsen opdateret?
-> - Er experimental features aktiveret i settings?
+> - Er `chat.useAgentSkills` aktiveret i settings? (søg efter "useAgentSkills")
 
 #### Step 1: Opret skill mappe
 
