@@ -502,7 +502,14 @@ Når du spørger Copilot om noget, tjekker den om en skill matcher - og indlæse
 #### Step 1: Opret skill mappe
 
 Kør i terminal:
+
+**PowerShell (Windows):**
 ```powershell
+New-Item -ItemType Directory -Force -Path ".github/skills/file-creator"
+```
+
+**Bash (Mac/Linux):**
+```bash
 mkdir -p .github/skills/file-creator
 ```
 
