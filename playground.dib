@@ -494,6 +494,11 @@ Når du spørger Copilot om noget, tjekker den om en skill matcher - og indlæse
 
 **Mål:** Få GitHub Copilot til at gøre det samme som vores tool + MCP + agent - oprette filer!
 
+> **Vigtig note:** VS Code Skills er eksperimentelt (v1.108+). Hvis det ikke virker, tjek:
+> - Er du på VS Code 1.108 eller nyere? (`Help > About`)
+> - Er Copilot-udvidelsen opdateret?
+> - Er experimental features aktiveret i settings?
+
 #### Step 1: Opret skill mappe
 
 Kør i terminal:
