@@ -22,14 +22,26 @@ Dette er vores POC/eksperimenterings-sandbox til at validere Ollama-integration,
 
 ### 1.1 Er Ollama installeret?
 
-Åbn en terminal og kør:
+Installer Ollama:
+
+**Windows (PowerShell):**
 ```powershell
 winget install Ollama.Ollama
-ollama serve
 ```
 
-Pull modellen:
-```powershell
+**Mac (Homebrew):**
+```bash
+brew install ollama
+```
+
+**Linux:**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+Start Ollama og pull modellen:
+```bash
+ollama serve
 ollama pull llama3.1:8b
 ```
 👆🏻 Kan også udføres i Ollama GUI
@@ -145,7 +157,7 @@ using System.IO;
 
 string ExecuteCreateFile(string path, string content)
 {
-    var fullPath = Path.Combine(@"C:\code\GitHub\agentic-swe-workshops", path);
+    var fullPath = Path.Combine(Environment.CurrentDirectory, path);
 
     try
     {
@@ -163,7 +175,7 @@ var testResult = ExecuteCreateFile("test-file.txt", "Hello from test!");
 Console.WriteLine(testResult);
 
 // Cleanup
-File.Delete(@"C:\code\GitHub\agentic-swe-workshops\test-file.txt");
+File.Delete(Path.Combine(Environment.CurrentDirectory, "test-file.txt"));
 Console.WriteLine("Test file cleaned up.");
 
 #!markdown
@@ -303,7 +315,7 @@ Console.WriteLine(result);
 
 #!csharp
 
-var filePath = @"C:\code\GitHub\agentic-swe-workshops\HelloAgentWorld.cs";
+var filePath = Path.Combine(Environment.CurrentDirectory, "HelloAgentWorld.cs");
 
 if (File.Exists(filePath))
 {
