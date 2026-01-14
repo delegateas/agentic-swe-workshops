@@ -849,12 +849,21 @@ my-skill/
 
 ### Hvorfor Skills?
 
-- **Genanvendelige** - Virker i både GitHub Copilot OG Claude Code
-- **Progressive disclosure** - Metadata først, detaljer on-demand
-- **Versionerbare** - Git-venlige tekstfiler
-- **Testbare** - Scripts kan køres uafhængigt
+Tools og MCP er gode, men hvis du giver en model 100 tools, bliver den forvirret og ydeevnen falder.
+
+Skills løser dette med "Lazy Loading" - en delmængde af tool-definitioner indlæses efter behov.
+
+En "router" (ofte en mindre model eller en med en dedikeret prompt) klassificerer først brugerens hensigt. Hvis brugeren spørger om "Vejret", indlæser systemet Weather Tool-definitionerne. Hvis de spørger om "Aktier", indlæser det Finance Tool-definitionerne.
+
+Afvejninger:
+
+- *Fordele*: forbedret modelaccuracy (mindre distraktion); lavere tokenforbrug; renere system-prompts.
+
+- *Ulemper*: Tilføjer et routing-trin (latency); kræver vedligeholdelse af en taksonomi over skills; risiko for fejlrouting (indlæsning af forkert toolset på grund af routerfejl).
 
 #!markdown
+
+<img src="images/LLM_with_skills_call.webp" alt="sekvensdigram over skills" width="600" style="max-width: 100%;">
 
 ### SKILL.md Struktur
 
