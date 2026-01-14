@@ -463,3 +463,106 @@ Brug denne sektion til at eksperimentere med:
 #!csharp
 
 // Din eksperimentering her...
+
+#!markdown
+
+---
+
+## 6. GitHub Copilot Skills (VS Code Integration)
+
+Vi har nu set hvordan vi kan bygge en agent med tools (sektion 2-3) og MCP (sektion 4).
+Men hvad hvis vi allerede har en agent? **GitHub Copilot!**
+
+VS Code 1.108 introducerede eksperimentel support for "agent skills" -
+mapper med SKILL.md filer som Copilot automatisk indlæser når de er relevante.
+
+### 6.1 Hvad er en Copilot Skill?
+
+En skill er en mappe med struktureret viden:
+
+```
+.github/skills/
+└── file-creator/
+    └── SKILL.md
+```
+
+Når du spørger Copilot om noget, tjekker den om en skill matcher - og indlæser den automatisk.
+
+#!markdown
+
+### 6.2 Øvelse: Opret din første Copilot Skill
+
+**Mål:** Få GitHub Copilot til at gøre det samme som vores tool + MCP + agent - oprette filer!
+
+#### Step 1: Opret skill mappe
+
+Kør i terminal:
+```powershell
+mkdir -p .github/skills/file-creator
+```
+
+#### Step 2: Opret SKILL.md
+
+Opret filen `.github/skills/file-creator/SKILL.md` med dette indhold:
+
+```yaml
+---
+name: file-creator
+description: Creates files when the user asks to create, write, or generate a file
+---
+
+# File Creator Skill
+
+Du er en hjælpsom assistent der opretter filer når brugeren beder om det.
+
+## Instruktioner
+
+Når brugeren beder dig om at oprette en fil:
+
+1. **Parse anmodningen** - Find filnavn og indhold
+2. **Opret filen** - Brug VS Code's fil-oprettelse
+3. **Bekræft** - Fortæl brugeren at filen er oprettet
+
+## Eksempler
+
+**Bruger:** "Lav en fil der hedder HelloCopilot.cs med Hello World"
+**Handling:** Opret HelloCopilot.cs med C# Hello World kode
+
+**Bruger:** "Opret en README.md til mit projekt"
+**Handling:** Opret README.md med passende indhold
+```
+
+#!markdown
+
+#### Step 3: Test med GitHub Copilot Chat
+
+1. Åbn **Copilot Chat** (Ctrl+Alt+I eller via sidebar)
+2. Prøv disse prompts:
+   - "Opret en fil HelloCopilot.cs der printer 'Hello fra Copilot Skill!'"
+   - "Lav en simpel C# fil kaldet Test.cs"
+
+#### Step 4: Verificer
+
+Tjek om filen blev oprettet i roden af projektet.
+
+#!markdown
+
+### 6.3 Sammenligning: Tool vs MCP vs Skill
+
+| Aspekt | Tool (sektion 2) | MCP (sektion 4) | Copilot Skill |
+|--------|------------------|-----------------|---------------|
+| Definition | Inline i kode | Ekstern server | SKILL.md fil |
+| Runtime | Din agent | MCP server proces | VS Code + Copilot |
+| Discovery | Hardcoded | Dynamisk via MCP | Automatisk |
+| Kræver | OllamaSharp + kode | MCP SDK + server | Kun SKILL.md |
+
+**Konklusion:** Skills er den enkleste vej til at udvide en eksisterende agent (Copilot) med domæneviden!
+
+#!markdown
+
+### 6.4 Gå videre
+
+Prøv at udvide din skill med:
+- Flere filtyper (.cs, .md, .json, .yaml)
+- Specifikke templates (fx "Opret en xUnit test fil")
+- Domæne-specifik viden (fx "Opret en MCP server fil")
