@@ -13,7 +13,7 @@ Sources and materials used to develop these workshops.
 | Title | Source |
 |-------|--------|
 | [Building Effective Agents](https://www.youtube.com/watch?v=CEvIs9y1uog) | Anthropic's guide to skills and agent architecture |
-| [YouTube Live](https://www.youtube.com/live/ZBkRBs4O1VM) | (update title) |
+| [AI Giants Interview with Geoffrey Huntley, Creator of the /ralph-loop](https://www.youtube.com/live/ZBkRBs4O1VM) |
 
 ## Transcriptions
 
