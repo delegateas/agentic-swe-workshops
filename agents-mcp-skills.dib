@@ -1014,13 +1014,13 @@ Du har nu:
 
 **Hvordan vi plejede at tænke:**
 
-<img src="images/anthropic-how-we-used-to-think-about-agents.png" alt="Separate agents for each domain" width="700">
+<img src="images/anthropic-how-we-used-to-think-about-agents.png" alt="Separate agents for each domain" width="600" style="max-width: 100%;">
 
 Vi troede hver domæne kræver sin egen agent med egne tools og scaffolding.
 
 **Hvad vi opdagede:**
 
-<img src="images/anthropic-code-is-the-universal-interface.png" alt="Code is the universal interface" width="700">
+<img src="images/anthropic-code-is-the-universal-interface.png" alt="Code is the universal interface" width="600" style="max-width: 100%;">
 
 Kode er ikke bare en use case – det er den universelle grænseflade til den digitale verden.
 
