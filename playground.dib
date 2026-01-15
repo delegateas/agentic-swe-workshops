@@ -45,6 +45,9 @@ ollama serve
 ollama pull llama3.1:8b
 ```
 👆🏻 Kan også udføres i Ollama GUI
+```powershell
+Vælg en model, skriv en prompt, f.eks. "hej" og tryk retur. Modellen skulle nu downloades.
+```
 
 #!csharp
 
@@ -109,7 +112,7 @@ Console.WriteLine("\n\nChat virker!");
 
 ### 2.1 Manual Tool Definition
 
-OllamaSharp source generators virker måske ikke i notebooks, så vi bruger manuel definition:
+Vi definerer et `create_file` tool, som giver LLM'en mulighed for at oprette filer på filsystemet:
 
 #!csharp
 
