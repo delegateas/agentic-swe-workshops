@@ -14,12 +14,12 @@ En praktisk workshop hvor vi udforsker den nye verden af **agentic software engi
 
 | Tid | Emne |
 |-----|------|
-| 25 min | Setup, Benchmarks & Polyglot Notebooks |
-| 60 min | **Byg en Agent** – The Emperor Has No Clothes |
+| 25 min | Intro, Recap & Polyglot Notebooks |
+| 60 min | Agenter - teori og byg din egen |
 | 20 min | Abstraktionsstigen – OllamaSharp.Tool |
 | 15 min | *Pause* |
-| 50 min | MCP – The USB-C for AI Tools |
-| 40 min | Skills – Extending GitHub Copilot |
+| 50 min | Abstraktionsstigen – MCP |
+| 40 min | Skills – teori og prøv med GitHub Copilot |
 | 10 min | Afrunding |
 
 ---
@@ -54,7 +54,7 @@ VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
 
 #!markdown
 
-# Del 0: Setup, Benchmarks & Polyglot Notebooks
+# Del 0: Intro, Recap & Polyglot Notebooks
 *25 minutter*
 
 #!markdown
@@ -239,7 +239,7 @@ catch
 
 ---
 
-# Del 1: The Emperor Has No Clothes
+# Del 1: Agenter - teori og byg din egen
 *60 minutter*
 
 ## Teori: Demystificering af AI Agents
@@ -722,7 +722,7 @@ Du har nu:
 
 #!markdown
 
-# Del 2: Abstraktionsstigen
+# Del 2: Abstraktionsstigen – OllamaSharp.Tool
 *20 minutter*
 
 Nu hvor du forstår hvad der sker "under the hood", lad os se hvordan OllamaSharp pakker det samme.
@@ -828,10 +828,12 @@ if (toolCall.Function.Name == "get_station_status")
 
 #!markdown
 
-# Del 3: MCP - The USB-C for AI Tools
+# Del 3: Abstraktionsstigen – MCP
 *50 minutter*
 
-## Teori: Model Context Protocol
+Vi fortsætter op ad abstraktionsstigen: SimpleTool → OllamaSharp.Tool → **MCP**.
+
+## Teori: Model Context Protocol (MCP)
 
 ### Problemet: N×M Integrationer
 
@@ -999,7 +1001,7 @@ Du har nu:
 
 #!markdown
 
-# Del 4: Skills - Extending GitHub Copilot
+# Del 4: Skills – teori og prøv med GitHub Copilot
 *40 minutter*
 
 ## SEPARAT VEJ
