@@ -255,26 +255,7 @@ AI coding assistants virker som magi, men kernen er simpel:
 
 ### The Agentic Loop - 4 Steps
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                      AGENTIC LOOP                            │
-│                                                              │
-│   1. User sender besked                                      │
-│         ↓                                                    │
-│   2. LLM modtager besked + tool definitioner                 │
-│         ↓                                                    │
-│   3. LLM returnerer enten:                                   │
-│      - Tekst svar (færdig!) ELLER                            │
-│      - Tool call (JSON med navn + argumenter)                │
-│         ↓                                                    │
-│   4. HVIS tool call:                                         │
-│      - VI eksekverer tool lokalt                             │
-│      - Sender resultat tilbage til LLM                       │
-│                                                              │
-│   5. GOTO step 2                                             │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
-```
+<img src="images/agentic-loop.svg" alt="Agentic Loop" width="600" style="max-width: 100%;">
 
 **Nøgleindsigt:** LLM'en kalder aldrig noget. Den outputter JSON der siger "Jeg vil gerne kalde X med Y". VI eksekverer det!
 

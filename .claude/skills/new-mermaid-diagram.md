@@ -10,7 +10,7 @@ Creates a Mermaid diagram, exports it to SVG, and inserts it into a Polyglot Not
 
 2. **Export to SVG** using mermaid-cli:
    ```bash
-   npx -y @mermaid-js/mermaid-cli mmdc -i images/<name>.mmd -o images/<name>.svg
+   npx -y @mermaid-js/mermaid-cli -i images/<name>.mmd -o images/<name>.svg
    ```
 
 3. **Insert into notebook** using this img tag format:
@@ -34,7 +34,7 @@ Creating a diagram for "agent loop":
 ```bash
 # 1. Write the .mmd file to images/agent-loop.mmd
 # 2. Export to SVG
-npx -y @mermaid-js/mermaid-cli mmdc -i images/agent-loop.mmd -o images/agent-loop.svg
+npx -y @mermaid-js/mermaid-cli -i images/agent-loop.mmd -o images/agent-loop.svg
 ```
 
 ```html

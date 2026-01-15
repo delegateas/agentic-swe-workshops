@@ -1,0 +1,7 @@
+flowchart TD
+    A[1. User sender besked] --> B[2. LLM modtager besked + tool definitioner]
+    B --> C{3. LLM returnerer}
+    C -->|Tekst svar| D[Færdig!]
+    C -->|Tool call JSON| E[4. VI eksekverer tool lokalt]
+    E --> F[Sender resultat tilbage til LLM]
+    F --> B
