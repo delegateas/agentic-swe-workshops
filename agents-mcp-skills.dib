@@ -102,6 +102,7 @@ Console.WriteLine("Hello EV World!");
 ## Det Agentiske Landskab – Benchmarks
 
 <img src="images/Orloff-1600x1067.webp" alt="Professor Orloff" width="600" style="max-width: 100%;">
+<br><br>
 
 > An LLM is just a brain in a jar. 🧠
 
@@ -158,9 +159,8 @@ METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
 <br><img src="images/metr-timeline.svg" alt="METR Tidslinje" width="600" style="max-width: 100%;">
 
-**Nøgletal:**
-- Tidshorisonten **fordobles hver 7. måned** (konsistent over 6 år)
-- <10% succes på opgaver >4 timer (men Opus 4.5 nærmer sig!)
+**Bemærk:**
+- Tidshorisonten **fordobles hver 7. måned** (konsistent over 6 år, dvs. en pendant til Moore's Law)
 
 **Hvis trenden fortsætter:**
 - 2-4 år: ugelange opgaver
@@ -180,8 +180,6 @@ JetBrains' benchmark - evaluerer hele engineering lifecycle på Spring-projekter
 | 2 | Claude Code 2.0.55 | Claude Opus 4.5 | 68.0 |
 | 3 | Junie CLI 496.3-prototype | Claude Sonnet 4.5 | 68.0 |
 
-*Bemærk: Alle top 3 bruger Claude-modeller!*
-
 [dpaia.dev](https://dpaia.dev/)
 
 ---
@@ -194,8 +192,6 @@ METR-studie (juli 2025):
 Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622)):
 - Mennesker uden AI: **~50%** sårbar kode
 - Mennesker MED AI: **~64%** — faktisk *værre*!
-
-**Budskab:** Agentic SWE virker NU og forbedres hurtigt. Denne workshop lærer dig at bygge det.
 
 #!markdown
 
@@ -274,7 +270,8 @@ AI coding assistants virker som magi, men kernen er simpel:
 │   4. HVIS tool call:                                         │
 │      - VI eksekverer tool lokalt                             │
 │      - Sender resultat tilbage til LLM                       │
-│      - GOTO step 2                                           │
+│                                                              │
+│   5. GOTO step 2                                             │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
