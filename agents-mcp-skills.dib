@@ -111,15 +111,13 @@ Console.WriteLine("Hello EV World!");
 ### Hvorfor kan LLM'er kode så godt nu?
 
 **Kode har indbygget feedback.** Til forskel fra "god tekst" kan vi objektivt måle om kode virker:
-- Kompilerer det? ✓/✗
-- Består tests? ✓/✗
-- Løser det opgaven? ✓/✗
+- Kompilerer det? ✅/❌
+- Består tests? ✅/❌
+- Løser det opgaven? ✅/❌
 
 Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
 <img src="images/ai-training-loop.svg" alt="AI Træningsloop" width="600" style="max-width: 100%;">
-
-**Resultat:** "Extended thinking" — modeller der tænker før de svarer (o1, o3, Claude thinking mode)
 
 #!markdown
 
@@ -193,6 +191,8 @@ Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622))
 - Mennesker uden AI: **~50%** sårbar kode
 - Mennesker MED AI: **~64%** — faktisk *værre*!
 
+Forskning tager lang tid og der innoveres med lynets hast, så det handler i høj grad om at etablere et væddemål.
+
 #!markdown
 
 ## Prerequisites Verification
@@ -242,8 +242,6 @@ catch
 # Del 1: Agenter - teori og byg din egen
 *60 minutter*
 
-## Teori: Demystificering af AI Agents
-
 > **"The LLM never actually touches your filesystem. It just *asks* for things to happen."**
 > — Mihail Eric, ["The Emperor Has No Clothes"](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)
 
@@ -263,12 +261,11 @@ AI coding assistants virker som magi, men kernen er simpel:
 
 ## 1.1 Hvad LLM'en Faktisk Ser
 
-Lad os se præcis hvad der sendes til Ollama - ingen magi, bare JSON!
+Lad os se præcis hvad der sendes til Ollama.
 
 #!csharp
 
-// Dette er PRÆCIS hvad vi sender til Ollama som tool definition
-// Det er bare JSON Schema der beskriver en funktion
+// Dette er PRÆCIS hvad vi sender til Ollama som tool definition. Det er bare JSON der beskriver en funktion.
 
 var toolJsonExample = """
 {
@@ -296,7 +293,6 @@ Console.WriteLine(toolJsonExample);
 #!csharp
 
 // Og dette er hvad LLM'en returnerer når den vil bruge et tool
-// Det er OGSÅ bare JSON - ingen magi!
 
 var toolCallResponseExample = """
 {
@@ -335,7 +331,6 @@ Nu bygger vi vores egen tool-definition der skjuler INGENTING.
 
 using System.Text.Json;
 
-// SimpleTool - en 4-linje record der skjuler INGENTING
 record SimpleTool(
     string Name,
     string Description,
@@ -343,11 +338,7 @@ record SimpleTool(
     Func<JsonElement, string> Execute // Selve koden - lige her!
 );
 
-Console.WriteLine("✅ SimpleTool defineret!");
-Console.WriteLine("   - Name: string");
-Console.WriteLine("   - Description: string");
-Console.WriteLine("   - ParameterSchema: Raw JSON schema");
-Console.WriteLine("   - Execute: Func<JsonElement, string> - DIN kode!");
+Console.WriteLine($"✅ {typeof(SimpleTool).Name} defineret!");
 
 #!markdown
 
@@ -402,23 +393,6 @@ Nu definerer vi 3 tools med vores SimpleTool record:
 
 #!csharp
 
-// Helpers to handle LLM returning numbers as strings (common with smaller models)
-double GetDoubleValue(JsonElement element, string propertyName)
-{
-    var prop = element.GetProperty(propertyName);
-    return prop.ValueKind == JsonValueKind.String
-        ? double.Parse(prop.GetString()!)
-        : prop.GetDouble();
-}
-
-int GetIntValue(JsonElement element, string propertyName)
-{
-    var prop = element.GetProperty(propertyName);
-    return prop.ValueKind == JsonValueKind.String
-        ? int.Parse(prop.GetString()!)
-        : prop.GetInt32();
-}
-
 var tools = new Dictionary<string, SimpleTool>
 {
     ["get_station_status"] = new(
@@ -434,10 +408,9 @@ var tools = new Dictionary<string, SimpleTool>
 
             var hasSession = activeSessions.TryGetValue(stationId, out var session);
 
-            if (hasSession)
-                return $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger.";
-            else
-                return $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
+            return hasSession
+                ? $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger."
+            : $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
         }
     ),
 
@@ -462,8 +435,8 @@ var tools = new Dictionary<string, SimpleTool>
         ParameterSchema: """{"type":"object","properties":{"kwh":{"type":"number","description":"Energy needed in kWh"},"hour":{"type":"integer","description":"Hour of day (0-23)"}},"required":["kwh","hour"]}""",
         Execute: args =>
         {
-            var kwh = GetDoubleValue(args, "kwh");
-            var hour = GetIntValue(args, "hour");
+            var kwh = double.Parse(args.GetProperty("kwh").ToString());
+            var hour = int.Parse(args.GetProperty("hour").ToString());
             var tariff = GetTariff(hour);
             var cost = (decimal)kwh * tariff;
 
