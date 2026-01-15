@@ -14,30 +14,58 @@ En praktisk workshop hvor vi udforsker den nye verden af **agentic software engi
 
 | Tid | Emne |
 |-----|------|
-| 5 min | Opsummering fra sidste gang |
-| 5 min | Intro til Polyglot Notebooks |
-| 15 min | Det agentiske landskab – overblik |
-| 55 min | **Byg en Agent** – teori + øvelse |
+| 25 min | Setup, Benchmarks & Polyglot Notebooks |
+| 60 min | **Byg en Agent** – The Emperor Has No Clothes |
+| 20 min | Abstraktionsstigen – OllamaSharp.Tool |
 | 15 min | *Pause* |
-| 50 min | MCP-servere – teori + øvelse |
-| 45 min | Skills – teori + øvelse |
-| 25 min | Integration – sæt det hele sammen – teori + øvelse |
-| 5 min | Afrunding |
+| 50 min | MCP – The USB-C for AI Tools |
+| 40 min | Skills – Extending GitHub Copilot |
+| 10 min | Afrunding |
+
+---
+
+## To Separate Veje
+
+```
+VEJ A: Byg Din Egen Agent (Del 1-3)
+┌──────────────────────────────────────────────────────────────┐
+│  Del 1: SimpleTool + Manuel Loop                             │
+│     ↓ "Jeg forstår hvordan det virker"                       │
+│  Del 2: OllamaSharp.Tool (samme, men bibliotek)              │
+│     ↓ "Bibliotek pakker de samme koncepter"                  │
+│  Del 3: MCP erstatter inline tools                           │
+│     → Samme agent, men tools fra MCP servere                 │
+│     → IChatClient + UseFunctionInvocation() = automatisk loop│
+│     → "USB-C metafor" - standardiseret connectivity          │
+└──────────────────────────────────────────────────────────────┘
+
+VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
+┌──────────────────────────────────────────────────────────────┐
+│  Del 4: GitHub Copilot + SKILL.md                            │
+│     → Byg ikke en agent, udvid én du allerede har            │
+│     → SKILL.md filer tilføjer domæneviden                    │
+│     → Copilot har allerede loopet, LLM, tools                │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Disse veje integrerer IKKE!** De er alternative tilgange.
 
 ---
 
 #!markdown
 
-# Opsummering fra sidste gang
-*5 minutter*
+# Del 0: Setup, Benchmarks & Polyglot Notebooks
+*25 minutter*
 
-<!-- TODO: Martin udfylder dette afsnit med recap fra forrige session -->
+#!markdown
+
+## Opsummering fra sidste gang
 
 - LLMs & Agents - What are they, and why can they code? — Martin
 - Agentisk softwareudvikling for personlig produktivitet - Emil
 - Agentisk Software Engineering for fuld SDLC af et produkt - Magnus
 
-Lige denne planche fra er meget relevant mht. dagens seance: [How LLMs Learn: The Three Stages](https://martinrl.github.io/presentations/what-are-llms-and-agents/index.html#14)
+Lige denne planche er meget relevant mht. dagens seance: [How LLMs Learn: The Three Stages](https://martinrl.github.io/presentations/what-are-llms-and-agents/index.html#14)
 
 <img src="images/LLMs-14.png" alt="LLMs-14" width="600" style="max-width: 100%;">
 
@@ -45,10 +73,9 @@ Lige denne planche fra er meget relevant mht. dagens seance: [How LLMs Learn: Th
 
 #!markdown
 
-# Intro til Polyglot Notebooks
-*5 minutter*
+## Intro til Polyglot Notebooks
 
-## Hvad er en Polyglot Notebook?
+### Hvad er en Polyglot Notebook?
 
 - `.dib` format (tidligere `.dotnet-interactive`)
 - Kører på .NET Interactive kernel
@@ -57,67 +84,30 @@ Lige denne planche fra er meget relevant mht. dagens seance: [How LLMs Learn: Th
   - `#!markdown` - Dokumentation (som denne celle)
   - `#!csharp` - C# kode
   - `#!meta` - Kernel konfiguration
-  - …
 
-## Sådan kører du en celle
+### Sådan kører du en celle
 
 - **Shift+Enter** - Kør celle og gå til næste
 - **Ctrl+Enter** - Kør celle og bliv
 - Variabler persisterer på tværs af celler
 
-#!markdown
-
-### Mini-øvelse: Hello EV World
-
-Kør cellen nedenfor med **Shift+Enter**:
-
 #!csharp
 
-Console.WriteLine("Hello EV World! ⚡🚗");
+Console.WriteLine("Hello EV World!");
 
 #!markdown
-
-Deklarer nu en variabel:
-
-#!csharp
-
-var chargerName = "ChargeSmart Station Alpha";
-var powerOutput = 150; // kW
-
-#!markdown
-
-Og brug den i næste celle:
-
-#!csharp
-
-Console.WriteLine($"{chargerName} leverer {powerOutput} kW");
-
-#!markdown
-
-**Checkpoint:** Du skulle se output fra alle tre celler. Variablerne `chargerName` og `powerOutput` er nu tilgængelige i hele notebook-sessionen.
 
 ---
 
-#!markdown
-
-# Det agentiske landskab – overblik
-*15 minutter*
+## Det Agentiske Landskab – Benchmarks
 
 <img src="images/Orloff-1600x1067.webp" alt="Professor Orloff" width="600" style="max-width: 100%;">
 
 > An LLM is just a brain in a jar. 🧠
 
 — [Simon Maple](https://www.linkedin.com/in/simonmaple/), Head of Developer Relations @ Tessl ([AI Native podcast](https://open.spotify.com/episode/1HYcUlgkCa9VwvVfuy3fyx?nd=1&dlsi=a77f69fabf8b46b1))
-<br>
 
-
-> *"Vi er forbi kodegenerering som flaskehalsen. Udfordringen nu er klarhed og tillid."*
-
-> De fleste tech. startups er AI-native med < 10% af skreven af LLM'er. Store virksomheder tester stadig med PoC-projekter.
-
-— [Tariq Shaukat](https://www.linkedin.com/in/tariq-shaukat/), CEO @ Sonar ([McKinsey Interview](https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/how-ai-is-shaking-up-coding-interview-with-sonar-ceo-tariq-shaukat))
-
-## Hvorfor kan LLM'er kode så godt nu?
+### Hvorfor kan LLM'er kode så godt nu?
 
 **Kode har indbygget feedback.** Til forskel fra "god tekst" kan vi objektivt måle om kode virker:
 - Kompilerer det? ✓/✗
@@ -130,11 +120,11 @@ Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
 **Resultat:** "Extended thinking" — modeller der tænker før de svarer (o1, o3, Claude thinking mode)
 
-## Hvordan måler vi AI-agenter/LLM'er iht. kodning? (pr. 9. januar 2026)
+#!markdown
 
-Tre nøgle-benchmarks viser hvor langt vi er kommet:
+### Benchmarks (pr. januar 2026)
 
-### 1. SWE-bench: Løs rigtige GitHub issues
+#### 1. SWE-bench: Løs rigtige GitHub issues
 
 **SWE-bench Verified** (500 human-validerede issues):
 
@@ -156,7 +146,7 @@ Tre nøgle-benchmarks viser hvor langt vi er kommet:
 
 ---
 
-### 2. METR: Hvor lang tid kan AI arbejde selvstændigt?
+#### 2. METR: Hvor lang tid kan AI arbejde selvstændigt?
 
 METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
@@ -180,7 +170,7 @@ METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
 ---
 
-### 3. DPAI Arena: Full developer workflow
+#### 3. DPAI Arena: Full developer workflow
 
 JetBrains' benchmark - evaluerer hele engineering lifecycle på Spring-projekter (140+ opgaver).
 
@@ -205,22 +195,58 @@ Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622))
 - Mennesker uden AI: **~50%** sårbar kode
 - Mennesker MED AI: **~64%** — faktisk *værre*!
 
+**Budskab:** Agentic SWE virker NU og forbedres hurtigt. Denne workshop lærer dig at bygge det.
+
 #!markdown
 
-## Agentarkitekturen: "It's that simple"
+## Prerequisites Verification
 
-<img src="agent-pattern.png" alt="Agent Pattern" width="600" style="max-width: 100%;">
+#!markdown
+
+### 1. Er Ollama installeret og kørende?
+
+**Windows (PowerShell):**
+```powershell
+winget install Ollama.Ollama
+```
+
+**Mac (Homebrew):**
+```bash
+brew install ollama
+```
+
+Start Ollama og pull modellen:
+```bash
+ollama serve
+ollama pull llama3.1:8b
+```
+
+#!csharp
+
+// Test: Kan vi nå Ollama?
+using System.Net.Http;
+
+var httpClient = new HttpClient();
+string selectedModelName = "llama3.1:8b";
+
+try
+{
+    var response = await httpClient.GetStringAsync("http://localhost:11434/api/tags");
+    Console.WriteLine($"✅ Ollama kører! Model: {selectedModelName}");
+}
+catch
+{
+    Console.WriteLine("❌ Ollama kører IKKE. Start med: ollama serve");
+}
+
+#!markdown
 
 ---
 
-#!markdown
+# Del 1: The Emperor Has No Clothes
+*60 minutter*
 
-# Byg en Agent – teori + øvelse
-*55 minutter (15 min teori + 40 min øvelse)*
-
-## Teori: The Emperor Has No Clothes
-
-### Demystificering af AI Agents
+## Teori: Demystificering af AI Agents
 
 > **"The LLM never actually touches your filesystem. It just *asks* for things to happen."**
 > — Mihail Eric, ["The Emperor Has No Clothes"](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)
@@ -231,455 +257,132 @@ AI coding assistants virker som magi, men kernen er simpel:
 - **Din kode** udfører handlingerne lokalt
 - Resultater sendes tilbage til LLM
 
-### The Agentic Loop - 5 Steps
+### The Agentic Loop - 4 Steps
 
 ```
-1. User sender besked
-2. LLM beslutter hvad der skal ske
-3. Hvis LLM vil bruge et tool → vi udfører det lokalt
-4. Resultat sendes tilbage til LLM
-5. Gentag indtil LLM er færdig (ingen tool calls)
+┌──────────────────────────────────────────────────────────────┐
+│                      AGENTIC LOOP                            │
+│                                                              │
+│   1. User sender besked                                      │
+│         ↓                                                    │
+│   2. LLM modtager besked + tool definitioner                 │
+│         ↓                                                    │
+│   3. LLM returnerer enten:                                   │
+│      - Tekst svar (færdig!) ELLER                            │
+│      - Tool call (JSON med navn + argumenter)                │
+│         ↓                                                    │
+│   4. HVIS tool call:                                         │
+│      - VI eksekverer tool lokalt                             │
+│      - Sender resultat tilbage til LLM                       │
+│      - GOTO step 2                                           │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-```
-┌──────────────────────────────────────────────────────┐
-│                    AGENTIC LOOP                       │
-│                                                       │
-│   ┌─────────┐    ┌─────────┐    ┌──────────────┐    │
-│   │  User   │───►│   LLM   │───►│ Tool Call?   │    │
-│   │ Prompt  │    │         │    │              │    │
-│   └─────────┘    └─────────┘    └──────┬───────┘    │
-│                       ▲                 │            │
-│                       │            Yes  │  No        │
-│                       │                 ▼            │
-│                  ┌────┴────┐      ┌──────────┐      │
-│                  │ Append  │◄─────│ Execute  │      │
-│                  │ Result  │      │  Tool    │      │
-│                  └─────────┘      └──────────┘      │
-│                                         │            │
-│                                    ┌────▼────┐      │
-│                                    │  Done   │      │
-│                                    └─────────┘      │
-└──────────────────────────────────────────────────────┘
-```
-
-### Minimum Viable Tools
-
-For en fungerende coding agent behøves kun:
-- **create_file** - Opret filer
-- (Valgfrit: read_file, list_files)
-
-Det er *virkelig* så simpelt!
+**Nøgleindsigt:** LLM'en kalder aldrig noget. Den outputter JSON der siger "Jeg vil gerne kalde X med Y". VI eksekverer det!
 
 #!markdown
 
-## Øvelse: Byg en Agent der Skaber Kode
-*40 minutter*
+## 1.1 Hvad LLM'en Faktisk Ser
 
-### Mål
-
-Byg en agent med ét tool (`create_file`) der kan generere C# kode.
-
-**Forventet output:** Agenten skaber `HelloAgentWorld.cs` i workshop-mappen!
-
-#!markdown
-
-### Step 1: Installer Ollama (forudsætning)
-
-Hvis ikke allerede gjort:
-```powershell
-winget install Ollama.Ollama
-ollama pull llama3.1:8b
-ollama list  # Verificer installation
-```
+Lad os se præcis hvad der sendes til Ollama - ingen magi, bare JSON!
 
 #!csharp
 
-// Test: Kan vi nå Ollama?
-using System.Net.Http;
+// Dette er PRÆCIS hvad vi sender til Ollama som tool definition
+// Det er bare JSON Schema der beskriver en funktion
 
-var httpClient = new HttpClient();
-try
+var toolJsonExample = """
 {
-    var response = await httpClient.GetStringAsync("http://localhost:11434/api/tags");
-    Console.WriteLine("✅ Ollama kører!");
+  "type": "function",
+  "function": {
+    "name": "get_station_status",
+    "description": "Get real-time status of an EV charging station",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "stationId": {
+          "type": "string",
+          "description": "The station ID, e.g., CPH-001"
+        }
+      },
+      "required": ["stationId"]
+    }
+  }
 }
-catch (Exception ex)
-{
-    Console.WriteLine($"❌ Ollama kører IKKE: {ex.Message}");
-    Console.WriteLine("Start Ollama med: ollama serve");
-}
+""";
 
-#!markdown
-
-### Step 2: Installer OllamaSharp
+Console.WriteLine("Dette er hvad LLM'en ser som tool definition:");
+Console.WriteLine(toolJsonExample);
 
 #!csharp
 
-#r "nuget: OllamaSharp, 5.1.3"
+// Og dette er hvad LLM'en returnerer når den vil bruge et tool
+// Det er OGSÅ bare JSON - ingen magi!
 
-using OllamaSharp;
-using OllamaSharp.Models;
-using OllamaSharp.Models.Chat;
+var toolCallResponseExample = """
+{
+  "message": {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+      {
+        "function": {
+          "name": "get_station_status",
+          "arguments": {
+            "stationId": "CPH-001"
+          }
+        }
+      }
+    ]
+  }
+}
+""";
+
+Console.WriteLine("Når LLM'en vil kalde et tool, returnerer den:");
+Console.WriteLine(toolCallResponseExample);
+Console.WriteLine("\nLLM'en EKSEKVERER ikke noget - den beder OS om at gøre det!");
+
+#!markdown
+
+## 1.2 SimpleTool - Den Transparente Abstraktion
+
+Nu bygger vi vores egen tool-definition der skjuler INGENTING.
+
+**Forskellen på SimpleTool og OllamaSharp's Tool:**
+- `SimpleTool` har en `Execute` funktion - du kan se præcis hvad der kører
+- `OllamaSharp.Tool` er kun en data-struktur for JSON serialisering
+
+#!csharp
+
 using System.Text.Json;
 
-Console.WriteLine("✅ OllamaSharp loaded!");
-
-#!markdown
-
-### Step 3: Definer `create_file` Tool
-
-#!csharp
-
-// Tool definition - dette fortæller LLM hvad den kan gøre
-var createFileTool = new Tool
-{
-    Type = "function",
-    Function = new Function
-    {
-        Name = "create_file",
-        Description = "Create a file with the given content. Use this when asked to create, write, or generate a file.",
-        Parameters = new Parameters
-        {
-            Type = "object",
-            Properties = new Dictionary<string, Property>
-            {
-                ["path"] = new Property
-                {
-                    Type = "string",
-                    Description = "The file name to create (e.g., 'HelloWorld.cs')"
-                },
-                ["content"] = new Property
-                {
-                    Type = "string",
-                    Description = "The content to write to the file"
-                }
-            },
-            Required = ["path", "content"]
-        }
-    }
-};
-
-Console.WriteLine("✅ Tool defineret:");
-Console.WriteLine($"   Name: {createFileTool.Function.Name}");
-Console.WriteLine($"   Description: {createFileTool.Function.Description}");
-
-#!markdown
-
-### Step 4: Tool Execution Function
-
-**Din opgave:** Implementer funktionen der faktisk opretter filen.
-
-#!csharp
-
-// Workshop folder path
-var workshopPath = @"C:\code\GitHub\agentic-swe-workshops";
-
-string ExecuteCreateFile(string path, string content)
-{
-    // TODO: Implementer fil-oprettelse
-    // 1. Kombiner workshopPath med path
-    // 2. Skriv content til filen
-    // 3. Returner success/error besked
-
-    throw new NotImplementedException("Implementer ExecuteCreateFile!");
-}
-
-#!markdown
-
-### Løsning Step 4
-
-<details>
-<summary>Klik for at se løsningen</summary>
-
-```csharp
-string ExecuteCreateFile(string path, string content)
-{
-    var fullPath = Path.Combine(workshopPath, path);
-
-    try
-    {
-        File.WriteAllText(fullPath, content);
-        return $"✅ File created successfully at: {fullPath}";
-    }
-    catch (Exception ex)
-    {
-        return $"❌ Error creating file: {ex.Message}";
-    }
-}
-```
-
-</details>
-
-#!markdown
-
-### Step 5: Implementer The Agentic Loop
-
-**Din opgave:** Udfyld TODO-sektionerne i loopet.
-
-#!csharp
-
-async Task<string> RunAgent(string userMessage)
-{
-    var client = new OllamaApiClient("http://localhost:11434");
-
-    var messages = new List<Message>
-    {
-        new Message
-        {
-            Role = ChatRole.System,
-            Content = """
-                You are a helpful coding assistant. When asked to create files,
-                you MUST use the create_file tool. Always respond in the same
-                language as the user's message.
-                """
-        },
-        new Message { Role = ChatRole.User, Content = userMessage }
-    };
-
-    var tools = new List<Tool> { createFileTool };
-    var maxIterations = 10;
-    var iteration = 0;
-
-    while (iteration < maxIterations)
-    {
-        iteration++;
-        Console.WriteLine($"\n--- Iteration {iteration} ---");
-
-        // Send to LLM
-        var request = new ChatRequest
-        {
-            Model = "llama3.1:8b",
-            Messages = messages,
-            Tools = tools,
-            Stream = false
-        };
-
-        var response = await client.ChatAsync(request);
-        var assistantMessage = response.Message;
-        messages.Add(assistantMessage);
-
-        // TODO: Tjek om response indeholder tool calls
-        // Hint: assistantMessage.ToolCalls er en liste af tool calls
-
-        if (assistantMessage.ToolCalls != null && assistantMessage.ToolCalls.Any())
-        {
-            Console.WriteLine($"LLM wants to call {assistantMessage.ToolCalls.Count()} tool(s)");
-
-            foreach (var toolCall in assistantMessage.ToolCalls)
-            {
-                Console.WriteLine($"  Tool: {toolCall.Function.Name}");
-
-                // TODO: Eksekver tool og tilføj resultat
-                // 1. Hent path og content fra toolCall.Function.Arguments
-                // 2. Kald ExecuteCreateFile(path, content)
-                // 3. Tilføj tool result som ny Message med Role = ChatRole.Tool
-
-                throw new NotImplementedException("Implementer tool execution!");
-            }
-        }
-        else
-        {
-            // Ingen tool calls - LLM er færdig
-            Console.WriteLine("LLM finished (no tool calls)");
-            return assistantMessage.Content ?? "No response";
-        }
-    }
-
-    return "Max iterations reached";
-}
-
-Console.WriteLine("✅ Agentic loop function defined!");
-
-#!markdown
-
-### Løsning Step 5
-
-<details>
-<summary>Klik for at se løsningen</summary>
-
-```csharp
-if (assistantMessage.ToolCalls != null && assistantMessage.ToolCalls.Any())
-{
-    Console.WriteLine($"LLM wants to call {assistantMessage.ToolCalls.Count()} tool(s)");
-
-    foreach (var toolCall in assistantMessage.ToolCalls)
-    {
-        Console.WriteLine($"  Tool: {toolCall.Function.Name}");
-        Console.WriteLine($"  Args: {JsonSerializer.Serialize(toolCall.Function.Arguments)}");
-
-        string toolResult;
-        if (toolCall.Function.Name == "create_file")
-        {
-            var args = toolCall.Function.Arguments;
-            var path = args["path"]?.ToString() ?? "unknown.txt";
-            var content = args["content"]?.ToString() ?? "";
-            toolResult = ExecuteCreateFile(path, content);
-        }
-        else
-        {
-            toolResult = $"Unknown tool: {toolCall.Function.Name}";
-        }
-
-        Console.WriteLine($"  Result: {toolResult}");
-
-        messages.Add(new Message
-        {
-            Role = ChatRole.Tool,
-            Content = toolResult
-        });
-    }
-}
-```
-
-</details>
-
-#!markdown
-
-### Step 6: Test din Agent! 🚀
-
-#!csharp
-
-var result = await RunAgent(
-    "Lav en C# fil der hedder 'HelloAgentWorld.cs' som printer 'Hello Agent World!' til konsollen."
-);
-
-Console.WriteLine("\n=== Final Response ===");
-Console.WriteLine(result);
-
-#!markdown
-
-### Step 7: Verificer at filen blev oprettet
-
-#!csharp
-
-var filePath = Path.Combine(workshopPath, "HelloAgentWorld.cs");
-
-if (File.Exists(filePath))
-{
-    Console.WriteLine("🎉 SUCCESS! File created:");
-    Console.WriteLine(new string('-', 40));
-    Console.WriteLine(File.ReadAllText(filePath));
-    Console.WriteLine(new string('-', 40));
-}
-else
-{
-    Console.WriteLine("❌ File was NOT created. Check the agent output above.");
-}
-
-#!markdown
-
-### Checkpoint
-
-Du har nu:
-1. ✅ Defineret et tool (`create_file`)
-2. ✅ Implementeret tool execution
-3. ✅ Bygget et agentic loop (~50 linjer!)
-4. ✅ Set agenten skabe reel kode
-
-**Nøgleindsigt:** Det er *virkelig* så simpelt. ~200 linjer kode, og du har en fungerende agent!
-
----
-
-# ☕ PAUSE (15 min)
-
----
-
-#!markdown
-
-# MCP-servere – teori + øvelse
-*50 minutter (15 min teori + 35 min øvelse)*
-
-> **Fra Agent-øvelsen:** Vi byggede ét simpelt tool (`create_file`) manuelt.
-> Nu skal vi se hvordan **MCP standardiserer tools** - og introducerer vores ChargeSmart domæne!
-
-## Teori: Model Context Protocol
-
-### Hvad løser MCP?
-
-**Problemet:** Hver LLM-integration kræver custom connectors
-
-<img src="images/mcp-problem.svg" alt="MCP Problem" width="600" style="max-width: 100%;">
-
-**Løsningen:** Én standardprotokol
-
-<img src="images/mcp-solution.svg" alt="MCP Solution" width="600" style="max-width: 100%;">
-
-### Protokol Basics
-
-- **JSON-RPC 2.0** - Request/response format
-- **Transport:** stdio (lokalt) eller SSE (remote)
-- **Server anatomi:**
-  - **Tools** - Funktioner LLM kan kalde
-  - **Resources** - Data LLM kan læse
-  - **Prompts** - Foruddefinerede prompt templates
-
-### C# SDK
-
-```csharp
-// NuGet: ModelContextProtocol
-[McpServerToolType]
-public static class MyTools
-{
-    [McpServerTool, Description("Beskrivelse til LLM")]
-    public static string MyTool(string param) => "result";
-}
-```
-
-#!markdown
-
-## Øvelse 1: Byg en EV Charger Status Server
-*35 minutter*
-
-### Mål
-Byg en MCP server med ét tool: `GetChargerStatus(chargerId)`
-
-### Domæne: ChargeSmart Network
-
-Vi arbejder med et fiktivt EV-ladenetværk:
-- 10 ladestationer i København
-- Mix af slow (7kW), fast (50kW), ultra-fast (150kW)
-- Real-time tilgængelighed
-
-#!markdown
-
-### Step 1: Installer NuGet pakker
-
-#!csharp
-
-#r "nuget: ModelContextProtocol, 0.1.0-preview.15"
-#r "nuget: Microsoft.Extensions.Hosting, 8.0.0"
-
-#!markdown
-
-### Step 2: Definer data modeller
-
-#!csharp
-
-public record ChargerInfo(
-    string Id,
+// SimpleTool - en 4-linje record der skjuler INGENTING
+record SimpleTool(
     string Name,
-    string Location,
-    int PowerKw,
-    string Type // "slow", "fast", "ultra-fast"
+    string Description,
+    string ParameterSchema,           // Raw JSON - fuldt synligt
+    Func<JsonElement, string> Execute // Selve koden - lige her!
 );
 
-public record ChargerStatus(
-    string ChargerId,
-    bool Available,
-    int PowerKw,
-    string CurrentSession, // null hvis ledig
-    DateTime? SessionStart,
-    double? EnergyDeliveredKwh
-);
+Console.WriteLine("✅ SimpleTool defineret!");
+Console.WriteLine("   - Name: string");
+Console.WriteLine("   - Description: string");
+Console.WriteLine("   - ParameterSchema: Raw JSON schema");
+Console.WriteLine("   - Execute: Func<JsonElement, string> - DIN kode!");
 
 #!markdown
 
-### Step 3: Mock data for vores ladenetværk
+## 1.3 ChargeSmart Domæne - Mock Data
+
+Vi arbejder med et fiktivt EV-ladenetværk i København:
 
 #!csharp
 
-var chargers = new Dictionary<string, ChargerInfo>
+// Station data
+record StationInfo(string Id, string Name, string Location, int PowerKw, string Type);
+
+var stations = new Dictionary<string, StationInfo>
 {
     ["CPH-001"] = new("CPH-001", "Nørreport Station", "Nørreport", 150, "ultra-fast"),
     ["CPH-002"] = new("CPH-002", "Fisketorvet Parking", "Fisketorvet", 50, "fast"),
@@ -693,112 +396,428 @@ var chargers = new Dictionary<string, ChargerInfo>
     ["CPH-010"] = new("CPH-010", "Hellerup Station", "Hellerup", 50, "fast"),
 };
 
-// Simuler aktive sessioner (nogle ladere er optaget)
+// Simuler aktive sessioner
 var activeSessions = new Dictionary<string, (string vehicleId, DateTime start, double kwh)>
 {
-    ["CPH-002"] = ("EV-Tesla-3", DateTime.Now.AddMinutes(-45), 28.5),
-    ["CPH-004"] = ("EV-Polestar-2", DateTime.Now.AddMinutes(-12), 18.2),
-    ["CPH-007"] = ("EV-VW-ID4", DateTime.Now.AddHours(-2), 11.0),
+    ["CPH-002"] = ("Tesla-Model-3", DateTime.Now.AddMinutes(-45), 28.5),
+    ["CPH-004"] = ("Polestar-2", DateTime.Now.AddMinutes(-12), 18.2),
+    ["CPH-007"] = ("VW-ID4", DateTime.Now.AddHours(-2), 11.0),
 };
 
-Console.WriteLine($"Loaded {chargers.Count} chargers, {activeSessions.Count} active sessions");
+// Tarif struktur
+decimal GetTariff(int hour) => hour switch
+{
+    >= 0 and < 6 => 1.50m,      // Off-peak: 00:00-06:00
+    >= 6 and < 17 => 2.50m,     // Normal: 06:00-17:00
+    >= 17 and < 21 => 4.00m,    // Peak: 17:00-21:00
+    >= 21 and <= 23 => 2.50m,   // Normal: 21:00-00:00
+    _ => 2.50m
+};
+
+Console.WriteLine($"✅ Loaded {stations.Count} stationer, {activeSessions.Count} aktive sessioner");
 
 #!markdown
 
-### Step 4: Implementer MCP Tool
+## 1.4 Definer ChargeSmart Tools
 
-**Din opgave:** Udfyld `GetChargerStatus` metoden nedenfor.
-
-Metoden skal:
-1. Slå charger op i `chargers` dictionary
-2. Tjekke om der er en aktiv session i `activeSessions`
-3. Returnere en `ChargerStatus` med alle felter udfyldt
+Nu definerer vi 3 tools med vores SimpleTool record:
 
 #!csharp
 
-using System.ComponentModel;
-using ModelContextProtocol.Server;
-
-[McpServerToolType]
-public static class ChargerTools
+var tools = new Dictionary<string, SimpleTool>
 {
-    // Reference til vores data (i produktion ville dette være en service)
-    public static Dictionary<string, ChargerInfo> Chargers { get; set; }
-    public static Dictionary<string, (string vehicleId, DateTime start, double kwh)> ActiveSessions { get; set; }
+    ["get_station_status"] = new(
+        Name: "get_station_status",
+        Description: "Get real-time status of an EV charging station including availability, power level, and current session info",
+        ParameterSchema: """{"type":"object","properties":{"stationId":{"type":"string","description":"Station ID like CPH-001"}},"required":["stationId"]}""",
+        Execute: args =>
+        {
+            var stationId = args.GetProperty("stationId").GetString()!;
 
-    [McpServerTool]
-    [Description("Get real-time status of an EV charger including availability and current session info")]
-    public static ChargerStatus GetChargerStatus(
-        [Description("The charger ID, e.g. CPH-001")] string chargerId)
+            if (!stations.TryGetValue(stationId, out var station))
+                return $"Error: Station {stationId} not found";
+
+            var hasSession = activeSessions.TryGetValue(stationId, out var session);
+
+            if (hasSession)
+                return $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger.";
+            else
+                return $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
+        }
+    ),
+
+    ["list_stations"] = new(
+        Name: "list_stations",
+        Description: "List all EV charging stations in the ChargeSmart network with their current availability",
+        ParameterSchema: """{"type":"object","properties":{}}""",
+        Execute: _ =>
+        {
+            var lines = stations.Values.Select(s =>
+            {
+                var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
+                return $"- {s.Id}: {s.Name} ({s.Location}) - {s.PowerKw}kW {s.Type} - {status}";
+            });
+            return "ChargeSmart Network Stations:\n" + string.Join("\n", lines);
+        }
+    ),
+
+    ["calculate_charging_cost"] = new(
+        Name: "calculate_charging_cost",
+        Description: "Calculate the cost of charging based on kWh needed and time of day",
+        ParameterSchema: """{"type":"object","properties":{"kwh":{"type":"number","description":"Energy needed in kWh"},"hour":{"type":"integer","description":"Hour of day (0-23)"}},"required":["kwh","hour"]}""",
+        Execute: args =>
+        {
+            var kwh = args.GetProperty("kwh").GetDouble();
+            var hour = args.GetProperty("hour").GetInt32();
+            var tariff = GetTariff(hour);
+            var cost = (decimal)kwh * tariff;
+
+            var period = hour switch
+            {
+                >= 0 and < 6 => "off-peak",
+                >= 17 and < 21 => "peak",
+                _ => "normal"
+            };
+
+            return $"Charging {kwh:F1} kWh at {hour:00}:00 ({period} tariff: {tariff:F2} DKK/kWh) = {cost:F2} DKK";
+        }
+    )
+};
+
+Console.WriteLine($"✅ Defineret {tools.Count} tools:");
+foreach (var tool in tools.Values)
+{
+    Console.WriteLine($"   - {tool.Name}: {tool.Description.Substring(0, Math.Min(50, tool.Description.Length))}...");
+}
+
+#!markdown
+
+### Test tools direkte (uden LLM)
+
+#!csharp
+
+// Test get_station_status
+var args1 = JsonDocument.Parse("""{"stationId": "CPH-001"}""").RootElement;
+Console.WriteLine(tools["get_station_status"].Execute(args1));
+Console.WriteLine();
+
+// Test list_stations
+var args2 = JsonDocument.Parse("{}").RootElement;
+Console.WriteLine(tools["list_stations"].Execute(args2));
+Console.WriteLine();
+
+// Test calculate_charging_cost
+var args3 = JsonDocument.Parse("""{"kwh": 50, "hour": 18}""").RootElement;
+Console.WriteLine(tools["calculate_charging_cost"].Execute(args3));
+
+#!markdown
+
+## 1.5 The Agentic Loop - ~50 Lines, No Magic
+
+Nu bygger vi det komplette agentic loop fra bunden. Hver linje er synlig!
+
+#!csharp
+
+#r "nuget: OllamaSharp, 5.1.3"
+
+using OllamaSharp;
+using OllamaSharp.Models;
+using OllamaSharp.Models.Chat;
+
+Console.WriteLine("✅ OllamaSharp loaded!");
+
+#!csharp
+
+// Hjælpefunktion: Konverter SimpleTool til Ollama's Tool format
+Tool ToOllamaFormat(SimpleTool simpleTool)
+{
+    var schemaDoc = JsonDocument.Parse(simpleTool.ParameterSchema);
+    var props = schemaDoc.RootElement.GetProperty("properties");
+    var required = schemaDoc.RootElement.TryGetProperty("required", out var req)
+        ? req.EnumerateArray().Select(x => x.GetString()!).ToArray()
+        : Array.Empty<string>();
+
+    var properties = new Dictionary<string, Property>();
+    foreach (var prop in props.EnumerateObject())
     {
-        // TODO: Implementer denne metode
-        // 1. Find charger i Chargers dictionary
-        // 2. Tjek om chargerId findes i ActiveSessions
-        // 3. Returner ChargerStatus med korrekte værdier
-
-        throw new NotImplementedException("Implementer GetChargerStatus!");
+        properties[prop.Name] = new Property
+        {
+            Type = prop.Value.GetProperty("type").GetString(),
+            Description = prop.Value.TryGetProperty("description", out var desc) ? desc.GetString() : null
+        };
     }
+
+    return new Tool
+    {
+        Type = "function",
+        Function = new Function
+        {
+            Name = simpleTool.Name,
+            Description = simpleTool.Description,
+            Parameters = new Parameters
+            {
+                Type = "object",
+                Properties = properties,
+                Required = required
+            }
+        }
+    };
 }
 
-// Initialiser tool med vores data
-ChargerTools.Chargers = chargers;
-ChargerTools.ActiveSessions = activeSessions;
-
-#!markdown
-
-### Step 5: Test dit tool
-
-Når du har implementeret `GetChargerStatus`, kør disse tests:
+Console.WriteLine("✅ ToOllamaFormat helper defined");
 
 #!csharp
 
-// Test 1: Ledig lader
-var status1 = ChargerTools.GetChargerStatus("CPH-001");
-Console.WriteLine($"CPH-001: Available={status1.Available}, Power={status1.PowerKw}kW");
-
-// Test 2: Optaget lader
-var status2 = ChargerTools.GetChargerStatus("CPH-002");
-Console.WriteLine($"CPH-002: Available={status2.Available}, Session={status2.CurrentSession}, Energy={status2.EnergyDeliveredKwh}kWh");
-
-// Test 3: Ukendt lader
-try
+// THE AGENTIC LOOP - ~50 lines, no magic!
+async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> tools)
 {
-    var status3 = ChargerTools.GetChargerStatus("UNKNOWN");
-    Console.WriteLine("Fejl: Burde have kastet exception!");
+    var ollama = new OllamaApiClient("http://localhost:11434");
+
+    var messages = new List<Message>
+    {
+        new Message
+        {
+            Role = ChatRole.System,
+            Content = """
+                Du er en hjælpsom EV-ladnings assistent for ChargeSmart netværket i København.
+                Brug de tilgængelige tools til at besvare spørgsmål om ladestationer,
+                tilgængelighed, og priser. Svar altid på dansk.
+                """
+        },
+        new Message { Role = ChatRole.User, Content = userMessage }
+    };
+
+    var ollamaTools = tools.Values.Select(ToOllamaFormat).ToList();
+    var maxIterations = 10;
+    var iteration = 0;
+
+    while (iteration < maxIterations)
+    {
+        iteration++;
+        Console.WriteLine($"\n--- Iteration {iteration} ---");
+
+        // 1. Send til Ollama MED tool definitioner
+        var request = new ChatRequest
+        {
+            Model = selectedModelName ?? "llama3.1:8b",
+            Messages = messages,
+            Tools = ollamaTools,
+            Stream = false
+        };
+
+        ChatResponseStream? response = null;
+        await foreach (var chunk in ollama.ChatAsync(request))
+        {
+            response = chunk;
+        }
+
+        var assistantMessage = response?.Message;
+        if (assistantMessage == null)
+        {
+            return "Error: No response from LLM";
+        }
+
+        messages.Add(assistantMessage);
+
+        // 2. Tjek for tool calls
+        if (assistantMessage.ToolCalls == null || !assistantMessage.ToolCalls.Any())
+        {
+            // Ingen tool calls = LLM er færdig
+            Console.WriteLine("✅ LLM finished (no tool calls)");
+            return assistantMessage.Content ?? "No response";
+        }
+
+        // 3. Eksekvér hver tool call SELV
+        Console.WriteLine($"🔧 LLM wants to call {assistantMessage.ToolCalls.Count()} tool(s)");
+
+        foreach (var toolCall in assistantMessage.ToolCalls)
+        {
+            var toolName = toolCall.Function?.Name ?? "unknown";
+            Console.WriteLine($"   Tool: {toolName}");
+            Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
+
+            // Find og kør vores SimpleTool
+            if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
+            {
+                // Konverter arguments til JsonElement
+                var argsJson = JsonSerializer.Serialize(toolCall.Function.Arguments);
+                var argsElement = JsonDocument.Parse(argsJson).RootElement;
+
+                var result = tool.Execute(argsElement);  // <-- DIN kode kører her!
+                Console.WriteLine($"   📤 Result: {result.Substring(0, Math.Min(80, result.Length))}...");
+
+                // 4. Tilføj resultat til messages
+                messages.Add(new Message
+                {
+                    Role = ChatRole.Tool,
+                    Content = result
+                });
+            }
+            else
+            {
+                messages.Add(new Message
+                {
+                    Role = ChatRole.Tool,
+                    Content = $"Error: Unknown tool {toolName}"
+                });
+            }
+        }
+        // Loop fortsætter - LLM ser resultaterne
+    }
+
+    return "Max iterations reached";
 }
-catch (Exception ex)
-{
-    Console.WriteLine($"Korrekt! Exception: {ex.Message}");
-}
+
+Console.WriteLine("✅ RunAgent function defined (~50 lines)");
+Console.WriteLine("   - Modtager user message + tools");
+Console.WriteLine("   - Sender til Ollama med tool definitions");
+Console.WriteLine("   - Parser tool_calls fra response");
+Console.WriteLine("   - Eksekverer tools LOKALT");
+Console.WriteLine("   - Sender resultater tilbage");
+Console.WriteLine("   - Looper indtil færdig");
 
 #!markdown
 
-### Løsning (fold ud hvis du sidder fast)
+## 1.6 Test din Agent!
+
+#!csharp
+
+var result = await RunAgent(
+    "Hvilke ladestationer er ledige lige nu?",
+    tools
+);
+
+Console.WriteLine("\n=== Final Response ===");
+Console.WriteLine(result);
+
+#!csharp
+
+var result2 = await RunAgent(
+    "Hvad er status på CPH-002?",
+    tools
+);
+
+Console.WriteLine("\n=== Final Response ===");
+Console.WriteLine(result2);
+
+#!csharp
+
+var result3 = await RunAgent(
+    "Hvad koster det at lade 50 kWh kl. 18? Og hvad hvis jeg venter til kl. 22?",
+    tools
+);
+
+Console.WriteLine("\n=== Final Response ===");
+Console.WriteLine(result3);
+
+#!markdown
+
+## Checkpoint Del 1
+
+Du har nu:
+1. ✅ Set præcis hvad LLM'en modtager (JSON tool definitions)
+2. ✅ Set præcis hvad LLM'en returnerer (JSON tool calls)
+3. ✅ Bygget `SimpleTool` - en transparent tool abstraction
+4. ✅ Bygget det komplette agentic loop (~50 linjer!)
+5. ✅ Kørt en agent med 3 ChargeSmart tools
+
+**Nøgleindsigt:** Det er *virkelig* så simpelt. ~50 linjer loop + ~10 linjer per tool. The emperor has no clothes!
+
+---
+
+#!markdown
+
+# Del 2: Abstraktionsstigen
+*20 minutter*
+
+Nu hvor du forstår hvad der sker "under the hood", lad os se hvordan OllamaSharp pakker det samme.
+
+#!markdown
+
+## 2.1 Side-by-Side: SimpleTool vs OllamaSharp.Tool
+
+#!csharp
+
+// DIN SimpleTool - alt er synligt:
+var simpleToolExample = new SimpleTool(
+    Name: "get_station_status",
+    Description: "Get EV charging station status",
+    ParameterSchema: """{"type":"object","properties":{"stationId":{"type":"string"}},"required":["stationId"]}""",
+    Execute: args => $"Station {args.GetProperty("stationId").GetString()} is available"  // <-- Koden er HER
+);
+
+// OllamaSharp's Tool - samme data, anden struktur:
+var ollamaToolExample = new Tool
+{
+    Type = "function",
+    Function = new Function
+    {
+        Name = "get_station_status",
+        Description = "Get EV charging station status",
+        Parameters = new Parameters
+        {
+            Type = "object",
+            Properties = new Dictionary<string, Property>
+            {
+                ["stationId"] = new Property { Type = "string", Description = "Station ID" }
+            },
+            Required = new[] { "stationId" }
+        }
+    }
+};
+// BEMÆRK: Ingen Execute property! Du skal håndtere eksekveringen separat i dit loop.
+
+Console.WriteLine("SimpleTool har:");
+Console.WriteLine("  - Name, Description, ParameterSchema");
+Console.WriteLine("  - Execute: Func<JsonElement, string> ← KODEN ER HER");
+Console.WriteLine();
+Console.WriteLine("OllamaSharp.Tool har:");
+Console.WriteLine("  - Type, Function (Name, Description, Parameters)");
+Console.WriteLine("  - Ingen Execute! ← Du skal selv matche tool calls til kode");
+
+#!markdown
+
+## 2.2 Nøgleindsigt
+
+**OllamaSharp's Tool er bare en data-struktur til JSON serialisering.**
+
+Det er derfor vi byggede `SimpleTool` først - for at se det fulde billede:
+1. Tool *definition* (JSON schema) → sendes til LLM
+2. Tool *execution* (din kode) → kører lokalt når LLM requester det
+
+Libraries som OllamaSharp giver dig #1, men du skal selv håndtere #2.
+Vores `SimpleTool` pakker begge dele sammen så det er tydeligt.
+
+#!markdown
+
+## 2.3 Øvelse: Refaktorer til OllamaSharp.Tool
+
+Konverter én af dine SimpleTool definitioner til OllamaSharp.Tool format.
+Behold samme execution logic i dit loop.
 
 <details>
-<summary>Klik for at se løsningen</summary>
+<summary>Hint: Se løsningen</summary>
 
 ```csharp
-[McpServerTool]
-[Description("Get real-time status of an EV charger including availability and current session info")]
-public static ChargerStatus GetChargerStatus(
-    [Description("The charger ID, e.g. CPH-001")] string chargerId)
-{
-    if (!Chargers.TryGetValue(chargerId, out var charger))
-    {
-        throw new ArgumentException($"Unknown charger: {chargerId}");
+// SimpleTool version:
+var getStatus = new SimpleTool(
+    Name: "get_station_status",
+    // ...
+    Execute: args => { /* kode */ }
+);
+
+// OllamaSharp version:
+var getStatusTool = new Tool {
+    Function = new Function {
+        Name = "get_station_status",
+        // ... (ingen Execute!)
     }
+};
 
-    var hasSession = ActiveSessions.TryGetValue(chargerId, out var session);
-
-    return new ChargerStatus(
-        ChargerId: chargerId,
-        Available: !hasSession,
-        PowerKw: charger.PowerKw,
-        CurrentSession: hasSession ? session.vehicleId : null,
-        SessionStart: hasSession ? session.start : null,
-        EnergyDeliveredKwh: hasSession ? session.kwh : null
-    );
+// Execution håndteres separat i loop:
+if (toolCall.Function.Name == "get_station_status")
+{
+    result = /* din execution kode */;
 }
 ```
 
@@ -806,71 +825,235 @@ public static ChargerStatus GetChargerStatus(
 
 #!markdown
 
-### Checkpoint
+---
 
-Du skulle se output lignende:
-```
-CPH-001: Available=True, Power=150kW
-CPH-002: Available=False, Session=EV-Tesla-3, Energy=28.5kWh
-Korrekt! Exception: Unknown charger: UNKNOWN
-```
+# ☕ PAUSE (15 min)
 
 ---
 
 #!markdown
 
-# Skills – teori + øvelse
-*45 minutter (10 min teori + 35 min øvelse)*
+# Del 3: MCP - The USB-C for AI Tools
+*50 minutter*
 
-## Teori: Agent Skills
+## Teori: Model Context Protocol
 
-### Nøgleindsigt fra Anthropic
+### Problemet: N×M Integrationer
 
-> **"Stop building agents, start building skills"**
+<img src="images/mcp-problem.svg" alt="MCP Problem" width="600" style="max-width: 100%;">
 
-Hvorfor?
-- Agents er komplekse at bygge og vedligeholde
-- Skills er genanvendelige på tværs af alle agents
-- MCP standardiserer tool-connectivity
-- Fokuser på **domæneviden**, ikke infrastruktur
+Uden standardisering: Hver agent skal have custom integration til hver tool.
 
-### Hvad er en Skill?
+### Løsningen: MCP som Standard
 
-En **skill** er en mappe med struktureret viden som en AI-agent kan bruge:
+<img src="images/mcp-solution.svg" alt="MCP Solution" width="600" style="max-width: 100%;">
 
-```
-my-skill/
-├── SKILL.md           # Hovedinstruktioner (YAML frontmatter + markdown)
-├── scripts/           # Eksekverbare scripts agenten kan køre
-│   └── helper.csx
-└── references/        # Ekstra dokumentation
-    └── guide.md
-```
-
-### Hvorfor Skills?
-
-Tools og MCP er gode, men hvis du giver en model 100 tools, bliver den forvirret og ydeevnen falder.
-
-Skills løser dette med "Lazy Loading" - en delmængde af tool-definitioner indlæses efter behov.
-
-En "router" (ofte en mindre model eller en med en dedikeret prompt) klassificerer først brugerens hensigt. Hvis brugeren spørger om "Vejret", indlæser systemet Weather Tool-definitionerne. Hvis de spørger om "Aktier", indlæser det Finance Tool-definitionerne.
-
-Afvejninger:
-
-- *Fordele*: forbedret modelaccuracy (mindre distraktion); lavere tokenforbrug; renere system-prompts.
-
-- *Ulemper*: Tilføjer et routing-trin (latency); kræver vedligeholdelse af en taksonomi over skills; risiko for fejlrouting (indlæsning af forkert toolset på grund af routerfejl).
+**MCP = USB-C for AI tools.** Plug any tool into any agent.
 
 #!markdown
 
-<img src="images/LLM_with_skills_call.webp" alt="sekvensdigram over skills" width="600" style="max-width: 100%;">
+## 3.1 Hvad Ændrer Sig med MCP?
 
-### SKILL.md Struktur
+**Før (Del 1-2):** Tools defineret inline i din kode
+```csharp
+var tools = new Dictionary<string, SimpleTool> {
+    ["get_station_status"] = new SimpleTool(..., Execute: args => ...)
+};
+// Tools lever I din agent kode
+```
+
+**Efter (Del 3):** Tools kommer fra eksterne MCP servere
+```csharp
+var mcpClient = await McpClient.CreateAsync(transport);
+var tools = await mcpClient.ListToolsAsync();
+// Tools opdages dynamisk fra server!
+```
+
+**Samme agent loop, men tools er "pluggable".**
+
+#!markdown
+
+## 3.2 MCP Protocol Basics
+
+MCP bruger **JSON-RPC 2.0** over stdio (lokalt) eller SSE (remote).
+
+Tre hovedoperationer:
+1. `initialize` - Handshake mellem client og server
+2. `tools/list` - Hent liste af tilgængelige tools
+3. `tools/call` - Kald et specifikt tool
+
+#!csharp
+
+// MCP Client packages
+#r "nuget: ModelContextProtocol, 0.5.0-preview.1"
+#r "nuget: Microsoft.Extensions.AI, 9.1.0-preview.1.25064.3"
+
+using Microsoft.Extensions.AI;
+using ModelContextProtocol.Client;
+
+Console.WriteLine("✅ MCP packages loaded!");
+
+#!markdown
+
+## 3.3 Eksisterende MCP Server
+
+Projektet har allerede en `McpFileServer` der kan oprette filer.
+Lad os se hvordan den bruges med MCP.
+
+#!csharp
+
+// Forbind til MCP server
+var mcpClient = await McpClient.CreateAsync(
+    new StdioClientTransport(new()
+    {
+        Command = "dotnet",
+        Arguments = ["run", "--project", "McpFileServer"],
+        Name = "file-server"
+    }));
+
+var mcpTools = await mcpClient.ListToolsAsync();
+
+Console.WriteLine($"🔌 Fundet {mcpTools.Count} tools fra MCP server:");
+foreach (var tool in mcpTools)
+{
+    Console.WriteLine($"   - {tool.Name}: {tool.Description}");
+}
+
+#!markdown
+
+## 3.4 IChatClient + UseFunctionInvocation()
+
+Her kommer magien - eller rettere, **automationen af det loop du byggede i Del 1!**
+
+OllamaSharp implementerer `IChatClient` fra Microsoft.Extensions.AI.
+`UseFunctionInvocation()` automatiserer hele loop'et.
+
+#!csharp
+
+// OllamaApiClient IS an IChatClient!
+var ollama = new OllamaApiClient("http://localhost:11434");
+ollama.SelectedModel = selectedModelName ?? "llama3.1:8b";
+
+// Wrap med automatisk function invocation
+// Dette ER det agentic loop fra Del 1 - bare automatiseret!
+IChatClient chatClient = new ChatClientBuilder(ollama)
+    .UseFunctionInvocation()  // ← Automatiserer HELE loop'et fra Del 1
+    .Build();
+
+Console.WriteLine("✅ IChatClient med UseFunctionInvocation() klar!");
+Console.WriteLine("   - Modtager tool_calls fra LLM");
+Console.WriteLine("   - Eksekverer tools automatisk");
+Console.WriteLine("   - Sender resultater tilbage");
+Console.WriteLine("   - Looper indtil færdig");
+
+#!markdown
+
+## 3.5 Øvelse: ChargeSmart med MCP
+
+Kør samme query som i Del 1, men nu med MCP tools og automatiseret loop!
+
+#!csharp
+
+Console.WriteLine("Sender besked med MCP tools...\n");
+
+var messages = new List<ChatMessage>
+{
+    new(ChatRole.User, "Create a file called 'HelloMcpWorld.cs' that prints 'Hello from MCP!' to the console.")
+};
+
+// MCP tools + automatisk loop via IChatClient
+await foreach (var update in chatClient.GetStreamingResponseAsync(
+    messages,
+    new() { Tools = [.. mcpTools] }))
+{
+    Console.Write(update.Text);
+}
+
+Console.WriteLine("\n\n✅ Done!");
+
+#!csharp
+
+// Verificer at filen blev oprettet
+var mcpFilePath = "HelloMcpWorld.cs";
+
+if (File.Exists(mcpFilePath))
+{
+    Console.WriteLine("🎉 SUCCESS! MCP tool created the file:");
+    Console.WriteLine(new string('-', 40));
+    Console.WriteLine(File.ReadAllText(mcpFilePath));
+    Console.WriteLine(new string('-', 40));
+}
+else
+{
+    Console.WriteLine("❌ File was NOT created. Check output above.");
+}
+
+#!markdown
+
+## Checkpoint Del 3
+
+Du har nu:
+1. ✅ Forstået MCP som "USB-C for AI tools"
+2. ✅ Forbundet til en MCP server og opdaget tools dynamisk
+3. ✅ Set hvordan `IChatClient.UseFunctionInvocation()` automatiserer loop'et
+4. ✅ Kørt en agent med MCP tools
+
+**Nøgleindsigt:** MCP standardiserer tool connectivity. Samme agent kan bruge forskellige tools ved at plugge forskellige MCP servere ind.
+
+---
+
+#!markdown
+
+# Del 4: Skills - Extending GitHub Copilot
+*40 minutter*
+
+## SEPARAT VEJ
+
+> **Vigtigt:** Dette er en SEPARAT tilgang fra Del 1-3.
+> - Del 1-3: Byg din egen agent med Ollama
+> - Del 4: Udvid GitHub Copilot med domæneviden
+
+## Teori: Hvorfor Skills?
+
+**Problemet:** Giv en model 100 tools, og den bliver forvirret. Tool selection degraderer.
+
+**Løsningen:** Skills = "lazy-loaded expertise"
+- En "router" klassificerer først brugerens intent
+- Kun relevante tools/knowledge indlæses
+- Modellen fokuserer på én opgave ad gangen
+
+**Key insight:** Copilot har allerede loopet, LLM, og basale tools. Du tilføjer domæneviden!
+
+#!markdown
+
+## 4.1 GitHub Copilot Agent Mode
+
+VS Code 1.108+ har eksperimentel support for "agent skills".
+
+### Aktivering
+
+1. Åbn VS Code Settings (Ctrl+,)
+2. Søg efter `chat.useAgentSkills`
+3. Aktiver indstillingen
+
+### Skill Struktur
+
+```
+.github/skills/
+└── ev-charging-advisor/
+    └── SKILL.md
+```
+
+Copilot scanner automatisk `.github/skills/` og indlæser relevante skills.
+
+#!markdown
+
+## 4.2 SKILL.md Anatomi
 
 ```yaml
 ---
 name: my-skill
-description: Kort beskrivelse til agent discovery
+description: Kort beskrivelse til discovery
 triggers:
   - "når bruger spørger om X"
   - "når der er behov for Y"
@@ -878,40 +1061,48 @@ triggers:
 
 # Detaljerede Instruktioner
 
-Her kommer de fulde instruktioner agenten skal følge...
+Her kommer den fulde domæneviden...
 ```
 
-### Installation
+- **YAML frontmatter:** Metadata til skill discovery
+- **Markdown body:** Instruktioner, eksempler, context
 
-**GitHub Copilot:**
-```json
-// .vscode/settings.json
-{
-  "github.copilot.chat.codeGeneration.instructions": [
-    { "file": "skills/my-skill/SKILL.md" }
-  ]
-}
+#!markdown
+
+## 4.3 Øvelse: Opret EV Charging Advisor Skill
+
+### Step 1: Opret skill mappe
+
+**PowerShell:**
+```powershell
+New-Item -ItemType Directory -Force -Path ".github/skills/ev-charging-advisor"
 ```
 
-**Claude Code:**
+**Bash:**
 ```bash
-# Automatisk hvis SKILL.md er i repo
-# Eller via .claude/settings.json
+mkdir -p .github/skills/ev-charging-advisor
 ```
 
-#!markdown
+### Step 2: Opret SKILL.md
 
-## Øvelse 2: Opret en EV Charging Advisor Skill
-*35 minutter*
+Opret filen `.github/skills/ev-charging-advisor/SKILL.md`:
 
-### Mål
+```yaml
+---
+name: ev-charging-advisor
+description: Expert advice on EV charging optimization for ChargeSmart network
+triggers:
+  - "when user asks about charging costs"
+  - "when user wants to find cheapest charging time"
+  - "when user asks about EV battery tips"
+  - "when user mentions ChargeSmart or EV charging"
+---
 
-Byg en skill der hjælper med:
-- Anbefaling af optimal ladetid (billigste periode)
-- Beregning af ladeomkostninger
-- Tips til batterivedligeholdelse
+# EV Charging Advisor
 
-### Tarif-struktur (ChargeSmart priser)
+Du er en ekspert i at optimere elbil-ladning på ChargeSmart netværket i København.
+
+## ChargeSmart Tarif-struktur
 
 | Periode | Tid | Pris/kWh |
 |---------|-----|----------|
@@ -919,162 +1110,18 @@ Byg en skill der hjælper med:
 | Normal | 06:00-17:00, 21:00-00:00 | 2.50 DKK |
 | Peak | 17:00-21:00 | 4.00 DKK |
 
-#!markdown
+## Stationer i Netværket
 
-### Step 1: Skill mappe-struktur
-
-Opret følgende struktur (vi simulerer det her i notebook'en):
-
-```
-ev-charging-advisor/
-├── SKILL.md
-├── scripts/
-│   └── calculate-cost.csx
-└── references/
-    └── tariff-guide.md
-```
-
-#!markdown
-
-### Step 2: SKILL.md indhold
-
-Her er skabelonen - **din opgave er at udfylde instruktionerne**:
-
-#!csharp
-
-var skillMd = """
----
-name: ev-charging-advisor
-description: Helps users optimize EV charging times and costs for ChargeSmart network
-triggers:
-  - "when user asks about charging costs"
-  - "when user wants to find cheapest charging time"
-  - "when user asks about battery health tips"
-version: 1.0.0
----
-
-# EV Charging Advisor
-
-Du er en ekspert i at optimere elbil-ladning på ChargeSmart netværket.
-
-## Dine Capabilities
-
-1. **Omkostningsberegning** - Beregn pris baseret på kWh og tidspunkt
-2. **Tidsoptimering** - Find billigste ladetidspunkt
-3. **Batteri-tips** - Giv råd om batterivedligeholdelse
-
-## Tarif-struktur
-
-<!-- TODO: Tilføj tarif-tabel her -->
-
-## Instruktioner
-
-Når bruger spørger om ladning:
-
-<!-- TODO: Tilføj step-by-step instruktioner -->
-
-## Scripts
-
-Du har adgang til `scripts/calculate-cost.csx` til præcise beregninger.
-Kald scriptet med: `dotnet script scripts/calculate-cost.csx -- <kwh> <hour>`
-
-""";
-
-Console.WriteLine("SKILL.md template loaded");
-Console.WriteLine(skillMd);
-
-#!markdown
-
-### Step 3: Implementer calculate-cost.csx
-
-**Din opgave:** Skriv et C# script der beregner ladeomkostninger.
-
-Input: `<kwh> <hour>` (f.eks. `50 18` = 50 kWh kl. 18:00)
-Output: Total pris i DKK
-
-#!csharp
-
-// Simuler scriptet som en funktion her i notebook'en
-decimal CalculateChargingCost(double kwh, int hour)
-{
-    // TODO: Implementer prisberegning baseret på tarif-struktur
-    // Off-peak (00-06): 1.50 DKK/kWh
-    // Normal (06-17, 21-00): 2.50 DKK/kWh
-    // Peak (17-21): 4.00 DKK/kWh
-
-    throw new NotImplementedException("Implementer CalculateChargingCost!");
-}
-
-#!markdown
-
-### Step 4: Test din beregning
-
-#!csharp
-
-// Test cases
-Console.WriteLine($"50 kWh kl. 03:00 (off-peak): {CalculateChargingCost(50, 3)} DKK");  // Forventet: 75 DKK
-Console.WriteLine($"50 kWh kl. 10:00 (normal): {CalculateChargingCost(50, 10)} DKK");   // Forventet: 125 DKK
-Console.WriteLine($"50 kWh kl. 18:00 (peak): {CalculateChargingCost(50, 18)} DKK");     // Forventet: 200 DKK
-
-#!markdown
-
-### Løsning (fold ud hvis du sidder fast)
-
-<details>
-<summary>Klik for at se løsningen</summary>
-
-```csharp
-decimal CalculateChargingCost(double kwh, int hour)
-{
-    decimal pricePerKwh = hour switch
-    {
-        >= 0 and < 6 => 1.50m,      // Off-peak
-        >= 6 and < 17 => 2.50m,     // Normal (morning/day)
-        >= 17 and < 21 => 4.00m,    // Peak
-        >= 21 and <= 23 => 2.50m,   // Normal (evening)
-        _ => throw new ArgumentException($"Invalid hour: {hour}")
-    };
-
-    return (decimal)kwh * pricePerKwh;
-}
-```
-
-</details>
-
-#!markdown
-
-### Step 5: Færdiggør SKILL.md
-
-Opdater `skillMd` variablen med:
-1. Komplet tarif-tabel
-2. Step-by-step instruktioner til agenten
-3. Eksempler på gode svar
-
-#!csharp
-
-// Færdig SKILL.md
-var completedSkillMd = """
----
-name: ev-charging-advisor
-description: Helps users optimize EV charging times and costs for ChargeSmart network
-triggers:
-  - "when user asks about charging costs"
-  - "when user wants to find cheapest charging time"
-  - "when user asks about battery health tips"
-version: 1.0.0
----
-
-# EV Charging Advisor
-
-Du er en ekspert i at optimere elbil-ladning på ChargeSmart netværket.
-
-## Tarif-struktur
-
-| Periode | Tid | Pris/kWh |
-|---------|-----|----------|
-| Off-peak | 00:00-06:00 | 1.50 DKK |
-| Normal | 06:00-17:00, 21:00-00:00 | 2.50 DKK |
-| Peak | 17:00-21:00 | 4.00 DKK |
+- CPH-001: Nørreport Station - 150kW ultra-fast
+- CPH-002: Fisketorvet Parking - 50kW fast
+- CPH-003: Tivoli Garage - 50kW fast
+- CPH-004: Ørestad Center - 150kW ultra-fast
+- CPH-005: Amager Strandpark - 22kW slow
+- CPH-006: Nørrebro Runddel - 50kW fast
+- CPH-007: Frederiksberg Have - 7kW slow
+- CPH-008: Kastrup Lufthavn P4 - 150kW ultra-fast
+- CPH-009: Valby Langgade - 22kW slow
+- CPH-010: Hellerup Station - 50kW fast
 
 ## Instruktioner
 
@@ -1082,274 +1129,101 @@ Når bruger spørger om ladning:
 
 1. **Identificer behov** - Hvor mange kWh skal de lade?
 2. **Tjek tidspunkt** - Hvornår vil de lade?
-3. **Beregn pris** - Brug calculate-cost.csx scriptet
-4. **Optimer** - Foreslå billigere alternativer hvis relevant
-5. **Batteri-tips** - Tilføj relevante tips om batterivedligeholdelse
+3. **Beregn pris** - Brug tarif-tabellen
+4. **Optimer** - Foreslå ALTID billigere alternativer
+5. **Batteri-tips** - Tilføj relevante tips
 
 ## Batteri-tips
 
-- Undgå at lade til 100% dagligt (80% er optimalt)
-- Undgå at lade under 20% regelmæssigt
+- Undgå at lade til 100% dagligt (80% er optimalt for battery health)
+- Undgå at køre under 20% regelmæssigt
 - Forvarm batteri i koldt vejr før hurtigladning
-- Ultra-fast ladning (150kW) slider mere end langsom ladning
+- Ultra-fast ladning (150kW) slider mere på batteriet end langsom ladning
 
 ## Eksempel-dialog
 
 **Bruger:** Hvad koster det at lade 40 kWh kl. 18?
-**Assistent:** At lade 40 kWh kl. 18:00 koster 160 DKK (peak-tarif: 4.00 DKK/kWh).
 
-💡 **Tip:** Hvis du kan vente til kl. 21:00, falder prisen til 100 DKK (normal-tarif).
-Eller endnu bedre - lad natten over (kl. 00-06) for kun 60 DKK!
-""";
+**Svar:** At lade 40 kWh kl. 18:00 koster **160 DKK** (peak-tarif: 4.00 DKK/kWh).
 
-Console.WriteLine("Completed SKILL.md:");
-Console.WriteLine(completedSkillMd);
+💡 **Tip:** Hvis du kan vente til kl. 21:00, falder prisen til **100 DKK** (normal-tarif).
+Eller endnu bedre - lad natten over (kl. 00-06) for kun **60 DKK**!
+
+🔋 **Batteri-tip:** Hvis du ikke behøver fuld opladning, så lad kun til 80% for at forlænge batteriets levetid.
+```
 
 #!markdown
 
-### Checkpoint
+### Step 3: Test med Copilot Chat
+
+1. Åbn **Copilot Chat** i VS Code (Ctrl+Alt+I)
+2. Prøv disse prompts:
+   - "Hvad koster det at lade 50 kWh kl. 18?"
+   - "Find den billigste tid at lade min elbil"
+   - "Giv mig tips til at forlænge mit EV batteri"
+
+Copilot burde nu bruge din skill til at give ChargeSmart-specifikke svar!
+
+#!markdown
+
+## Checkpoint Del 4
 
 Du har nu:
-1. ✅ En SKILL.md med metadata og instruktioner
-2. ✅ Et calculate-cost script
-3. ✅ Klar til brug i GitHub Copilot eller Claude Code
+1. ✅ Forstået Skills som "lazy-loaded expertise"
+2. ✅ Oprettet en SKILL.md med domæneviden
+3. ✅ Udvidet GitHub Copilot med ChargeSmart ekspertise
 
----
-
-#!markdown
-
-Nu har vi alle byggeklodserne:
-- **Agent** (bygget i første øvelse) - Forstår loopet
-- **MCP** (bygget i anden øvelse) - ChargeSmart tools
-- **Skills** (bygget i tredje øvelse) - Domæneviden
-
-Lad os kombinere dem!
-
-#!markdown
-
-# Integration – sæt det hele sammen – teori + øvelse
-*25 minutter (5 min teori + 20 min øvelse)*
-
-## Teori: Connecting the Pieces
-
-### 2026 Mønsteret
-
-```
-┌────────────────────────────────────────────────────────────┐
-│                                                            │
-│   SKILLS provide EXPERTISE (how to use tools well)         │
-│   ────────────────────────────────────────────             │
-│   "Når bruger spørger om ladning, beregn først pris,       │
-│    foreslå derefter billigere alternativer..."             │
-│                                                            │
-│   MCP provides CONNECTIVITY (tools/data access)            │
-│   ───────────────────────────────────────────              │
-│   GetChargerStatus(), SearchChargers(), etc.               │
-│                                                            │
-│   AGENT provides ORCHESTRATION                             │
-│   ────────────────────────────────                         │
-│   The loop: prompt → LLM → tool? → execute → repeat        │
-│                                                            │
-└────────────────────────────────────────────────────────────┘
-```
-
-### Thin Agent Core + Rich Skills + MCP Ecosystem
-
-- **Agenten** er simpel: bare et loop
-- **Skills** indeholder al domæneviden
-- **MCP** standardiserer tool access
-
-#!markdown
-
-## Øvelse 4: Wire It All Together
-*20 minutter*
-
-### Mål
-
-Kombiner alle tre komponenter:
-1. **MCP Server** (fra Module 1) - Tool provider
-2. **Skill** (fra Module 2) - Domæneviden
-3. **Agent** (fra Module 3) - Orchestration
-
-#!csharp
-
-// Kombiner skill instructions med agent system prompt
-var skillInstructions = """
-    ## EV Charging Advisor Skill
-
-    Du er en ekspert i at optimere elbil-ladning på ChargeSmart netværket.
-
-    ### Tarif-struktur
-    | Periode | Tid | Pris/kWh |
-    |---------|-----|----------|
-    | Off-peak | 00:00-06:00 | 1.50 DKK |
-    | Normal | 06:00-17:00, 21:00-00:00 | 2.50 DKK |
-    | Peak | 17:00-21:00 | 4.00 DKK |
-
-    ### Instruktioner
-    1. Identificer brugerens ladebehov (kWh, tidspunkt)
-    2. Søg efter relevante ladere med search_chargers
-    3. Tjek tilgængelighed med get_charger_status
-    4. Beregn pris med calculate_charging_cost
-    5. Foreslå ALTID billigere alternativer hvis relevant
-    6. Tilføj batteri-tips når passende
-
-    ### Batteri-tips
-    - Undgå at lade til 100% dagligt (80% er optimalt)
-    - Ultra-fast ladning (150kW) slider mere på batteriet
-    """;
-
-var enhancedSystemPrompt = $"""
-    Du er en hjælpsom EV-ladnings assistent for ChargeSmart netværket i København.
-
-    {skillInstructions}
-
-    Svar altid på dansk. Vær venlig og informativ.
-    """;
-
-Console.WriteLine("Enhanced system prompt with skill instructions ready!");
-
-#!csharp
-
-// Opdateret agent med skill instructions
-async Task<string> RunEnhancedAgent(string userQuery, string apiKey)
-{
-    var client = new AnthropicClient(apiKey);
-
-    var messages = new List<Message>
-    {
-        new Message(RoleType.User, userQuery)
-    };
-
-    const int maxIterations = 10;
-    var iterations = 0;
-
-    while (iterations < maxIterations)
-    {
-        iterations++;
-        Console.WriteLine($"\n--- Iteration {iterations} ---");
-
-        var request = new MessageRequest
-        {
-            Model = "claude-sonnet-4-20250514",
-            MaxTokens = 1024,
-            System = enhancedSystemPrompt, // Nu med skill instructions!
-            Messages = messages,
-            Tools = tools
-        };
-
-        var response = await client.Messages.CreateAsync(request);
-        Console.WriteLine($"Stop reason: {response.StopReason}");
-
-        if (response.StopReason == "tool_use")
-        {
-            messages.Add(new Message(RoleType.Assistant, response.Content));
-
-            var toolResults = new List<ContentBlock>();
-
-            foreach (var content in response.Content)
-            {
-                if (content is ToolUseContent toolUse)
-                {
-                    Console.WriteLine($"Executing tool: {toolUse.Name}");
-                    var result = ExecuteTool(toolUse.Name, toolUse.Input);
-                    Console.WriteLine($"Result: {result.Substring(0, Math.Min(100, result.Length))}...");
-
-                    toolResults.Add(new ToolResultContent
-                    {
-                        ToolUseId = toolUse.Id,
-                        Content = result
-                    });
-                }
-            }
-
-            messages.Add(new Message(RoleType.User, toolResults));
-        }
-        else
-        {
-            var textContent = response.Content
-                .OfType<TextContent>()
-                .FirstOrDefault();
-
-            return textContent?.Text ?? "Ingen respons";
-        }
-    }
-
-    return "Max iterations reached";
-}
-
-Console.WriteLine("Enhanced agent ready!");
-
-#!markdown
-
-### End-to-End Test
-
-#!csharp
-
-if (!string.IsNullOrEmpty(apiKey))
-{
-    var queries = new[]
-    {
-        "Jeg skal lade min Tesla med 60 kWh. Det er kl 18 nu. Hvad er mine muligheder?",
-        "Find den billigste måde at lade 40 kWh på i dag",
-    };
-
-    foreach (var query in queries)
-    {
-        Console.WriteLine($"\n{'=',-60}");
-        Console.WriteLine($"USER: {query}");
-        Console.WriteLine($"{'=',-60}");
-
-        var response = await RunEnhancedAgent(query, apiKey);
-        Console.WriteLine($"\nASSISTANT:\n{response}");
-    }
-}
-
-#!markdown
-
-### Checkpoint
-
-Den enhanced agent skulle nu:
-- ✅ Bruge skill instructions til at guide sine svar
-- ✅ Altid foreslå billigere ladetidspunkter
-- ✅ Inkludere batteri-tips når relevant
-- ✅ Give komplette, venlige svar på dansk
+**Nøgleindsigt:** Du behøver ikke bygge en agent - du kan udvide én du allerede har!
 
 ---
 
 #!markdown
 
 # Afrunding
-*5 minutter*
+*10 minutter*
 
-## Recap
+## To Separate Veje - Recap
 
-| Komponent | Rolle |
-|-----------|-------|
-| **MCP** | Connectivity - standardiseret tool/data access |
-| **Skills** | Expertise - domæneviden og procedurer |
-| **Agent** | Orchestration - LLM loop med tools |
+### Vej A: Byg Din Egen Agent (Del 1-3)
+
+```
+SimpleTool → OllamaSharp.Tool → MCP Server
+```
+
+- Samme funktionalitet, stigende abstraktion
+- Fuld kontrol, fuld forståelse
+- **Brug når:** Custom agents, embedded systems, specifikke workflows
+
+### Vej B: Udvid en Eksisterende Agent (Del 4)
+
+```
+GitHub Copilot + SKILL.md → Domæneviden
+```
+
+- Byg ikke infrastruktur - tilføj viden
+- **Brug når:** Produktivitet, team workflows, quick wins
 
 ## Key Takeaways
 
-1. **Agents er simple** - bare et loop med tool execution
-2. **Skills er genanvendelige** - virker på tværs af alle agent platforms
-3. **MCP standardiserer** - én protokol for alle tools
-4. **Fokuser på domæneviden** - ikke infrastruktur
+1. **Agents er simple** - ~200 linjer loop kode
+2. **"Magien" er i LLM'en** - ikke infrastrukturen
+3. **MCP standardiserer** - USB-C for AI tools
+4. **Skills tilføjer viden** - uden at genopbygge
 
-## What's Next?
+## The Emperor Has No Clothes
 
-- **Skill marketplaces** - Del og brug andres skills
-- **MCP Apps** - Standalone MCP-baserede applikationer
-- **Parallel agents** - Flere agents der samarbejder
-- **Anthropic Claude Agent SDK** - Production-ready agent framework
+> **"The core of these tools isn't magic. It's about 200 lines of straightforward Python."**
+> — Mihail Eric
 
-## Resources
+Du har nu set det selv. Du kan bygge en agent. Du forstår hvad der sker.
+
+## Ressourcer
 
 - [MCP Documentation](https://modelcontextprotocol.io)
-- [Anthropic SDK](https://github.com/anthropics/anthropic-sdk-dotnet)
+- [Microsoft.Extensions.AI](https://github.com/dotnet/extensions)
 - [GitHub Copilot Skills](https://docs.github.com/en/copilot)
-- [Claude Code](https://claude.ai/code)
+- [The Emperor Has No Clothes](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)
+- [OllamaSharp](https://github.com/awaescher/OllamaSharp)
 
 ---
 
