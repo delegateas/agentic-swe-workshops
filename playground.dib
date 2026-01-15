@@ -352,7 +352,7 @@ I stedet for at definere tools inline (som i Section 2), kan tools:
 
 ```
 ┌─────────────┐     JSON-RPC/stdio     ┌─────────────┐
-│   Agent     │◄─────────────────────►│ MCP Server  │
+│   Agent     │◄─────────────────────► │ MCP Server  │
 │  (notebook) │                        │ (tools)     │
 └─────────────┘                        └─────────────┘
 ```
