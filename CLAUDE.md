@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Language / Sprog
+
+**VIGTIGT:** Workshop-notebooks (`agents-mcp-skills.dib`, `playground.dib`) skal skrives på **dansk**.
+
+- Al prosa, instruktioner og forklaringer skal være på dansk
+- Tekniske termer på engelsk er OK (f.eks. "tool", "agent", "MCP", "skill", "loop")
+- Kodekommentarer kan være på engelsk eller dansk
+- Overskrifter og sektion-titler skal være på dansk
+
+Eksempel:
+- ✅ "Vi definerer et `create_file` tool, som giver LLM'en mulighed for..."
+- ❌ "We define a `create_file` tool that allows the LLM to..."
+
 ## Repository Overview
 
 This repository contains workshop materials for agentic software engineering practices. Workshops are designed for hands-on learning with Polyglot Notebooks (.dib files). Primary language is C# with .NET Interactive kernel.
