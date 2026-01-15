@@ -402,6 +402,23 @@ Nu definerer vi 3 tools med vores SimpleTool record:
 
 #!csharp
 
+// Helpers to handle LLM returning numbers as strings (common with smaller models)
+double GetDoubleValue(JsonElement element, string propertyName)
+{
+    var prop = element.GetProperty(propertyName);
+    return prop.ValueKind == JsonValueKind.String
+        ? double.Parse(prop.GetString()!)
+        : prop.GetDouble();
+}
+
+int GetIntValue(JsonElement element, string propertyName)
+{
+    var prop = element.GetProperty(propertyName);
+    return prop.ValueKind == JsonValueKind.String
+        ? int.Parse(prop.GetString()!)
+        : prop.GetInt32();
+}
+
 var tools = new Dictionary<string, SimpleTool>
 {
     ["get_station_status"] = new(
@@ -445,8 +462,8 @@ var tools = new Dictionary<string, SimpleTool>
         ParameterSchema: """{"type":"object","properties":{"kwh":{"type":"number","description":"Energy needed in kWh"},"hour":{"type":"integer","description":"Hour of day (0-23)"}},"required":["kwh","hour"]}""",
         Execute: args =>
         {
-            var kwh = args.GetProperty("kwh").GetDouble();
-            var hour = args.GetProperty("hour").GetInt32();
+            var kwh = GetDoubleValue(args, "kwh");
+            var hour = GetIntValue(args, "hour");
             var tariff = GetTariff(hour);
             var cost = (decimal)kwh * tariff;
 
