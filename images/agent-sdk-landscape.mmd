@@ -1,0 +1,21 @@
+flowchart TB
+    subgraph DIY["🔧 DIY (denne workshop)"]
+        A[Din kode] --> B[OllamaSharp / IChatClient]
+        B --> C[Manuelt tool-loop]
+    end
+
+    subgraph Anthropic["🟠 Anthropic Claude Agent SDK"]
+        D[claude-agent-sdk] --> E[Computer Use Tools]
+        E --> F[Subagents & Context Compaction]
+    end
+
+    subgraph Microsoft["🔵 Microsoft Agent Framework"]
+        G[Semantic Kernel + AutoGen] --> H[Multi-Agent Orchestration]
+        H --> I[Enterprise Observability]
+    end
+
+    DIY -->|"Vokser ud af"| Anthropic
+    DIY -->|"Vokser ud af"| Microsoft
+
+    Anthropic -->|MCP| J[🔌 Samme tools]
+    Microsoft -->|MCP| J

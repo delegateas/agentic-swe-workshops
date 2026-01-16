@@ -1202,6 +1202,24 @@ GitHub Copilot + SKILL.md → Domæneviden
 3. **MCP standardiserer** - USB-C for AI tools
 4. **Skills tilføjer viden** - uden at genopbygge
 
+## Næste Skridt: Enterprise Agent SDK'er
+
+Nu hvor du har bygget din egen agent-loop og forstår abstraktionerne, kan du udforske etablerede SDK'er. Disse giver dig **observability**, **multi-agent orchestration** og **enterprise compliance** ud af boksen – men bygger på præcis de samme principper, du har lært i dag.
+
+**To tilgange dominerer:**
+
+| | **Anthropic Claude Agent SDK** | **Microsoft Agent Framework** |
+|---|---|---|
+| **Filosofi** | "Giv Claude en computer" | "Unified multi-agent orchestration" |
+| **Kerne** | Bash/fil-tools, subagents, MCP | AutoGen + Semantic Kernel |
+| **Sprog** | Python | Python, C#, Java |
+| **Styrke** | Simpel agent → computer-interaktion | Enterprise: observability, compliance, A2A |
+| **MCP** | ✅ Native integration | ✅ Native integration |
+
+![Agent SDK Landscape](images/agent-sdk-landscape.svg)
+
+> **Nøgleindsigt:** Begge SDK'er bygger på de samme principper, du har lært (tools, loops, MCP). Forskellen ligger i *hvor meget* infrastruktur du får "gratis" – og *hvilken leverandør* du binder dig til.
+
 ## The Emperor Has No Clothes
 
 > **"The core of these tools isn't magic. It's about 200 lines of straightforward Python."**
@@ -1216,6 +1234,8 @@ Du har nu set det selv. Du kan bygge en agent. Du forstår hvad der sker.
 - [GitHub Copilot Skills](https://docs.github.com/en/copilot)
 - [The Emperor Has No Clothes](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)
 - [OllamaSharp](https://github.com/awaescher/OllamaSharp)
+- [Building agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)
+- [Introducing Microsoft Agent Framework](https://azure.microsoft.com/en-us/blog/introducing-microsoft-agent-framework/)
 
 ---
 
