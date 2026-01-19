@@ -82,3 +82,15 @@ git add -A
 git commit -m "feat: description"
 # Note: git push is handled by user (production deployment decision)
 ```
+
+### Testing Before Commit
+
+When modifying code cells in `agents-mcp-skills.dib`, run the test script before committing:
+
+```powershell
+./test-agents-mcp-skills.ps1
+```
+
+**Prerequisites:** Ollama must be running with the `llama3.1:8b` model available.
+
+Only commit if the script exits with success (exit code 0).
