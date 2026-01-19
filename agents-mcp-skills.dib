@@ -62,8 +62,8 @@ VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
 ## Opsummering fra sidste gang
 
 - LLMs & Agents - What are they, and why can they code? — Martin
-- Agentisk softwareudvikling for personlig produktivitet - Emil
-- Agentisk Software Engineering for fuld SDLC af et produkt - Magnus
+- Agentisk softwareudvikling for personlig produktivitet — Emil
+- Agentisk Software Engineering for fuld SDLC af et produkt — Magnus
 
 Lige denne planche er meget relevant mht. dagens seance: [How LLMs Learn: The Three Stages](https://martinrl.github.io/presentations/what-are-llms-and-agents/index.html#14)
 
@@ -80,10 +80,6 @@ Lige denne planche er meget relevant mht. dagens seance: [How LLMs Learn: The Th
 - `.dib` format (tidligere `.dotnet-interactive`)
 - Kører på .NET Interactive kernel
 - Understøtter flere sprog: C#, F#, HTML, Mermaid, PowerShell, JavaScript, SQL, KQL
-- Celle-typer:
-  - `#!markdown` - Dokumentation (som denne celle)
-  - `#!csharp` - C# kode
-  - `#!meta` - Kernel konfiguration
 
 ### Sådan kører du en celle
 
@@ -115,7 +111,7 @@ Console.WriteLine("Hello EV World!");
 - Består tests? ✅/❌
 - Løser det opgaven? ✅/❌
 
-Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
+Dette muliggør **RLVR** (*Reinforcement Learning with Verifiable Rewards*):
 
 <img src="images/ai-training-loop.svg" alt="AI Træningsloop" width="600" style="max-width: 100%;">
 
@@ -123,7 +119,7 @@ Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
 ### Benchmarks (pr. januar 2026)
 
-#### 1. SWE-bench: Løs rigtige GitHub issues
+#### SWE-bench: Løs rigtige GitHub issues
 
 **SWE-bench Verified** (500 human-validerede issues):
 
@@ -145,7 +141,7 @@ Dette muliggør **RLVR** (Reinforcement Learning with Verifiable Rewards):
 
 ---
 
-#### 2. METR: Hvor lang tid kan AI arbejde selvstændigt?
+#### METR: Hvor lang tid kan AI arbejde selvstændigt?
 
 METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
@@ -168,7 +164,7 @@ METR måler **tidshorisonten** - hvor lange opgaver kan AI løse med 50% succes?
 
 ---
 
-#### 3. DPAI Arena: Full developer workflow
+#### DPAI Arena: Full developer workflow
 
 JetBrains' benchmark - evaluerer hele engineering lifecycle på Spring-projekter (140+ opgaver).
 
@@ -189,7 +185,7 @@ METR-studie (juli 2025):
 
 Sikkerhedssårbarheder ([Stanford/Boneh 2023](https://arxiv.org/abs/2211.03622)):
 - Mennesker uden AI: **~50%** sårbar kode
-- Mennesker MED AI: **~64%** — faktisk *værre*!
+- Mennesker MED AI: **~64%** — faktisk **værre**!
 
 Forskning tager lang tid og der innoveres med lynets hast, så det handler i høj grad om at etablere et væddemål.
 
@@ -211,11 +207,13 @@ winget install Ollama.Ollama
 brew install ollama
 ```
 
-Start Ollama og pull modellen:
+Start Ollama og hiv modellen ned:
 ```bash
 ollama serve
 ollama pull llama3.1:8b
 ```
+
+👆🏻 kan også foretages i GUI; vælg model, skriv en prompt (f.eks. "hej") og tryk retur
 
 #!csharp
 
@@ -255,7 +253,7 @@ AI coding assistants virker som magi, men kernen er simpel:
 
 <img src="images/agentic-loop.svg" alt="Agentic Loop" width="600" style="max-width: 100%;">
 
-**Nøgleindsigt:** LLM'en kalder aldrig noget. Den outputter JSON der siger "Jeg vil gerne kalde X med Y". VI eksekverer det!
+**Nøgleindsigt:** LLM'en kalder aldrig noget. Den outputter JSON der siger "Jeg vil gerne kalde X med Y". **Vi** eksekverer det!
 
 #!markdown
 
@@ -315,15 +313,15 @@ var toolCallResponseExample = """
 
 Console.WriteLine("Når LLM'en vil kalde et tool, returnerer den:");
 Console.WriteLine(toolCallResponseExample);
-Console.WriteLine("\nLLM'en EKSEKVERER ikke noget - den beder OS om at gøre det!");
+Console.WriteLine("\nLLM'en eksekverer ikke noget - den beder os om at gøre det!");
 
 #!markdown
 
 ## 1.2 SimpleTool - Den Transparente Abstraktion
 
-Nu bygger vi vores egen tool-definition der skjuler INGENTING.
+Nu bygger vi vores egen tool-definition.
 
-**Forskellen på SimpleTool og OllamaSharp's Tool:**
+**Forskellen på SimpleTool og OllamaSharp's indbyggede Tool:**
 - `SimpleTool` har en `Execute` funktion - du kan se præcis hvad der kører
 - `OllamaSharp.Tool` er kun en data-struktur for JSON serialisering
 
@@ -482,7 +480,7 @@ Console.WriteLine(tools["calculate_charging_cost"].Execute(args3));
 
 ## 1.5 The Agentic Loop - ~50 Lines, No Magic
 
-Nu bygger vi det komplette agentic loop fra bunden. Hver linje er synlig!
+Nu bygger vi det komplette agentic loop fra bunden.
 
 #!csharp
 
@@ -564,7 +562,7 @@ async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> t
         iteration++;
         Console.WriteLine($"\n--- Iteration {iteration} ---");
 
-        // 1. Send til Ollama MED tool definitioner
+        // 1. Send til Ollama med tool-definitioner
         var request = new ChatRequest
         {
             Model = selectedModelName ?? "llama3.1:8b",
@@ -581,9 +579,7 @@ async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> t
 
         var assistantMessage = response?.Message;
         if (assistantMessage == null)
-        {
             return "Error: No response from LLM";
-        }
 
         messages.Add(assistantMessage);
 
@@ -637,12 +633,6 @@ async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> t
 }
 
 Console.WriteLine("✅ RunAgent function defined (~50 lines)");
-Console.WriteLine("   - Modtager user message + tools");
-Console.WriteLine("   - Sender til Ollama med tool definitions");
-Console.WriteLine("   - Parser tool_calls fra response");
-Console.WriteLine("   - Eksekverer tools LOKALT");
-Console.WriteLine("   - Sender resultater tilbage");
-Console.WriteLine("   - Looper indtil færdig");
 
 #!markdown
 
@@ -689,7 +679,7 @@ Du har nu:
 4. ✅ Bygget det komplette agentic loop (~50 linjer!)
 5. ✅ Kørt en agent med 3 ChargeSmart tools
 
-**Nøgleindsigt:** Det er *virkelig* så simpelt. ~50 linjer loop + ~10 linjer per tool. The emperor has no clothes!
+**Nøgleindsigt:** Det er så simpelt. ~50 linjer loop + ~10 linjer per tool. *The emperor has no clothes!*
 
 ---
 
@@ -818,7 +808,7 @@ Uden standardisering: Hver agent skal have custom integration til hver tool.
 
 <img src="images/mcp-solution.svg" alt="MCP Solution" width="600" style="max-width: 100%;">
 
-**MCP = USB-C for AI tools.** Plug any tool into any agent.
+**MCP = USB-C for AI tools.** *Plug any tool into any agent.*
 
 #!markdown
 
@@ -829,7 +819,7 @@ Uden standardisering: Hver agent skal have custom integration til hver tool.
 var tools = new Dictionary<string, SimpleTool> {
     ["get_station_status"] = new SimpleTool(..., Execute: args => ...)
 };
-// Tools lever I din agent kode
+// Tools lever i din agent kode
 ```
 
 **Efter (Del 3):** Tools kommer fra eksterne MCP servere
@@ -839,7 +829,7 @@ var tools = await mcpClient.ListToolsAsync();
 // Tools opdages dynamisk fra server!
 ```
 
-**Samme agent loop, men tools er "pluggable".**
+**Samme agent loop, men tools er *"pluggable"*.**
 
 #!markdown
 
@@ -861,25 +851,90 @@ Tre hovedoperationer:
 using Microsoft.Extensions.AI;
 using ModelContextProtocol.Client;
 
-Console.WriteLine("✅ MCP packages loaded!");
+Console.WriteLine("✅ MCP-pakker indlæst!");
 
 #!markdown
 
-## 3.3 Eksisterende MCP Server
+## 3.3 Inline MCP Server med ChargeSmart Tools
 
-Projektet har allerede en `McpFileServer` der kan oprette filer.
-Lad os se hvordan den bruges med MCP.
+I stedet for at starte en ekstern server-proces, opretter vi en **inline MCP server** der genbruger vores ChargeSmart tools fra Del 1.
+
+Dette giver samme MCP-oplevelse, men med tools du allerede kender!
 
 #!csharp
 
-// Forbind til MCP server
-var mcpClient = await McpClient.CreateAsync(
-    new StdioClientTransport(new()
+using System.IO.Pipelines;
+using ModelContextProtocol.Server;
+
+// Opret in-memory pipes til kommunikation (ingen ekstern proces!)
+Pipe clientToServer = new(), serverToClient = new();
+
+// Start MCP server med ChargeSmart tools
+var mcpServer = McpServerFactory.Create(
+    new StreamServerTransport(
+        clientToServer.Reader.AsStream(),
+        serverToClient.Writer.AsStream()),
+    new McpServerOptions
     {
-        Command = "dotnet",
-        Arguments = ["run", "--project", "McpFileServer"],
-        Name = "file-server"
-    }));
+        ServerInfo = new() { Name = "ChargeSmart", Version = "1.0" },
+        Capabilities = new() { Tools = new() { } }
+    },
+    builder => builder
+        .WithTools([
+            McpServerTool.Create(
+                (string stationId) =>
+                {
+                    if (!stations.TryGetValue(stationId, out var station))
+                        return $"Error: Station {stationId} not found";
+
+                    var hasSession = activeSessions.TryGetValue(stationId, out var session);
+                    return hasSession
+                        ? $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger."
+                        : $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
+                },
+                new() { Name = "get_station_status", Description = "Get real-time status of an EV charging station. Parameter: stationId (e.g. CPH-001)" }),
+
+            McpServerTool.Create(
+                () =>
+                {
+                    var lines = stations.Values.Select(s =>
+                    {
+                        var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
+                        return $"- {s.Id}: {s.Name} ({s.Location}) - {s.PowerKw}kW {s.Type} - {status}";
+                    });
+                    return "ChargeSmart Network Stations:\n" + string.Join("\n", lines);
+                },
+                new() { Name = "list_stations", Description = "List all EV charging stations in the ChargeSmart network with their current availability" }),
+
+            McpServerTool.Create(
+                (double kwh, int hour) =>
+                {
+                    var tariff = GetTariff(hour);
+                    var cost = (decimal)kwh * tariff;
+                    var period = hour switch
+                    {
+                        >= 0 and < 6 => "off-peak",
+                        >= 17 and < 21 => "peak",
+                        _ => "normal"
+                    };
+                    return $"Charging {kwh:F1} kWh at {hour:00}:00 ({period} tariff: {tariff:F2} DKK/kWh) = {cost:F2} DKK";
+                },
+                new() { Name = "calculate_charging_cost", Description = "Calculate the cost of charging based on kWh needed and hour of day (0-23)" })
+        ])
+);
+
+// Start server i baggrunden
+_ = mcpServer.RunAsync();
+
+Console.WriteLine("✅ MCP Server startet med ChargeSmart tools!");
+
+#!csharp
+
+// Forbind client til samme pipes (omvendt retning)
+var mcpClient = await McpClient.CreateAsync(
+    new StreamClientTransport(
+        serverToClient.Reader.AsStream(),
+        clientToServer.Writer.AsStream()));
 
 var mcpTools = await mcpClient.ListToolsAsync();
 
@@ -922,13 +977,15 @@ Console.WriteLine("   - Looper indtil færdig");
 
 Kør samme query som i Del 1, men nu med MCP tools og automatiseret loop!
 
+**Bemærk:** Samme tools, samme data - men nu via MCP protokollen.
+
 #!csharp
 
 Console.WriteLine("Sender besked med MCP tools...\n");
 
 var messages = new List<ChatMessage>
 {
-    new(ChatRole.User, "Create a file called 'HelloMcpWorld.cs' that prints 'Hello from MCP!' to the console.")
+    new(ChatRole.User, "Hvilke ladestationer er ledige lige nu? Og hvad koster det at lade 30 kWh kl. 18?")
 };
 
 // MCP tools + automatisk loop via IChatClient
@@ -939,24 +996,7 @@ await foreach (var update in chatClient.GetStreamingResponseAsync(
     Console.Write(update.Text);
 }
 
-Console.WriteLine("\n\n✅ Done!");
-
-#!csharp
-
-// Verificer at filen blev oprettet
-var mcpFilePath = "HelloMcpWorld.cs";
-
-if (File.Exists(mcpFilePath))
-{
-    Console.WriteLine("🎉 SUCCESS! MCP tool created the file:");
-    Console.WriteLine(new string('-', 40));
-    Console.WriteLine(File.ReadAllText(mcpFilePath));
-    Console.WriteLine(new string('-', 40));
-}
-else
-{
-    Console.WriteLine("❌ File was NOT created. Check output above.");
-}
+Console.WriteLine("\n\n✅ Done!")
 
 #!markdown
 

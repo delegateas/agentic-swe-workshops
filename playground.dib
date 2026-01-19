@@ -340,6 +340,41 @@ else
 
 #!markdown
 
+### 4.0 ChargeSmart Data (til MCP)
+
+Først definerer vi ChargeSmart netværkets data, som vores MCP server skal bruge.
+
+#!csharp
+
+// ChargeSmart station data
+record StationInfo(string Id, string Name, string Location, int PowerKw, string Type);
+
+var stations = new Dictionary<string, StationInfo>
+{
+    ["CPH-001"] = new("CPH-001", "Nørreport Station", "Nørreport", 150, "ultra-fast"),
+    ["CPH-002"] = new("CPH-002", "Fisketorvet Parking", "Fisketorvet", 50, "fast"),
+    ["CPH-003"] = new("CPH-003", "Tivoli Garage", "Tivoli", 50, "fast"),
+    ["CPH-004"] = new("CPH-004", "Ørestad Center", "Ørestad", 150, "ultra-fast"),
+    ["CPH-005"] = new("CPH-005", "Amager Strandpark", "Amager", 22, "slow"),
+};
+
+var activeSessions = new Dictionary<string, (string vehicleId, DateTime start, double kwh)>
+{
+    ["CPH-002"] = ("Tesla-Model-3", DateTime.Now.AddMinutes(-45), 28.5),
+};
+
+decimal GetTariff(int hour) => hour switch
+{
+    >= 0 and < 6 => 1.50m,
+    >= 6 and < 17 => 2.50m,
+    >= 17 and < 21 => 4.00m,
+    _ => 2.50m
+};
+
+Console.WriteLine($"✅ ChargeSmart data: {stations.Count} stationer, {activeSessions.Count} aktive sessioner");
+
+#!markdown
+
 ### 4.1 Hvad er MCP?
 
 **Model Context Protocol (MCP)** er en åben standard fra Anthropic der standardiserer
@@ -359,55 +394,85 @@ I stedet for at definere tools inline (som i Section 2), kan tools:
 
 #!markdown
 
-### 4.2 MCP Server koden
+### 4.2 Inline MCP Server
 
-Åbn `McpFileServer/Program.cs` - det er samme `create_file` tool, men nu eksternaliseret:
-
-- `[McpServerToolType]` - marker klassen som tool provider
-- `[McpServerTool]` - marker metoden som et tool
-- `[Description]` - beskrivelse som LLM'en kan se
-
-#!markdown
-
-### 4.3 MCP Client Setup
-
-OllamaSharp har ikke indbygget MCP support, men det implementerer `IChatClient` fra
-**Microsoft.Extensions.AI** - og det har MCP SDK'en fuld support for!
-
-```
-OllamaApiClient (IChatClient) ←→ ChatClientBuilder ←→ McpClientTool
-                                  .UseFunctionInvocation()
-```
+I stedet for at starte en ekstern server-proces, opretter vi en **inline MCP server** der bruger in-memory pipes.
 
 #!csharp
 
-// MCP Client packages
+// MCP packages
 #r "nuget: ModelContextProtocol, 0.5.0-preview.1"
 #r "nuget: Microsoft.Extensions.AI, 9.1.0-preview.1.25064.3"
 
+using System.IO.Pipelines;
 using Microsoft.Extensions.AI;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Server;
 
-Console.WriteLine("MCP Client packages loaded!");
+Console.WriteLine("MCP packages loaded!");
 
 #!markdown
 
-### 4.4 Opret forbindelse til MCP Server
+### 4.3 Opret Inline MCP Server
 
 #!csharp
 
-// Start MCP server og hent tools
-var mcpClient = await McpClient.CreateAsync(
-    new StdioClientTransport(new()
+// Opret in-memory pipes til kommunikation
+Pipe clientToServer = new(), serverToClient = new();
+
+// Start MCP server med ChargeSmart tools
+var mcpServer = McpServerFactory.Create(
+    new StreamServerTransport(
+        clientToServer.Reader.AsStream(),
+        serverToClient.Writer.AsStream()),
+    new McpServerOptions
     {
-        Command = "dotnet",
-        Arguments = ["run", "--project", "McpFileServer"],
-        Name = "file-server"
-    }));
+        ServerInfo = new() { Name = "ChargeSmart", Version = "1.0" },
+        Capabilities = new() { Tools = new() { } }
+    },
+    builder => builder
+        .WithTools([
+            McpServerTool.Create(
+                (string stationId) =>
+                {
+                    if (!stations.TryGetValue(stationId, out var station))
+                        return $"Error: Station {stationId} not found";
+                    var hasSession = activeSessions.TryGetValue(stationId, out var session);
+                    return hasSession
+                        ? $"Station {stationId} ({station.Name}): IN USE"
+                        : $"Station {stationId} ({station.Name}): AVAILABLE - {station.PowerKw}kW {station.Type}";
+                },
+                new() { Name = "get_station_status", Description = "Get status of a charging station by ID (e.g. CPH-001)" }),
+
+            McpServerTool.Create(
+                () => string.Join("\n", stations.Values.Select(s =>
+                    $"- {s.Id}: {s.Name} - {(activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE")}")),
+                new() { Name = "list_stations", Description = "List all charging stations" }),
+
+            McpServerTool.Create(
+                (double kwh, int hour) => $"Charging {kwh:F1} kWh at {hour:00}:00 = {(decimal)kwh * GetTariff(hour):F2} DKK",
+                new() { Name = "calculate_cost", Description = "Calculate charging cost for kWh at given hour (0-23)" })
+        ])
+);
+
+_ = mcpServer.RunAsync();
+Console.WriteLine("✅ MCP Server startet!");
+
+#!markdown
+
+### 4.4 Opret MCP Client
+
+#!csharp
+
+// Forbind client til samme pipes (omvendt retning)
+var mcpClient = await McpClient.CreateAsync(
+    new StreamClientTransport(
+        serverToClient.Reader.AsStream(),
+        clientToServer.Writer.AsStream()));
 
 var mcpTools = await mcpClient.ListToolsAsync();
 
-Console.WriteLine($"Fundet {mcpTools.Count} tools fra MCP server:");
+Console.WriteLine($"🔌 Fundet {mcpTools.Count} tools fra MCP server:");
 foreach (var tool in mcpTools)
 {
     Console.WriteLine($"  - {tool.Name}: {tool.Description}");
@@ -431,7 +496,7 @@ Console.WriteLine("Sender besked med MCP tools...\n");
 
 var messages = new List<ChatMessage>
 {
-    new(ChatRole.User, "Lav en C# fil der hedder 'HelloMcpWorld.cs' og printer 'Hello MCP World!' til konsollen.")
+    new(ChatRole.User, "Hvilke ladestationer er ledige? Hvad koster 20 kWh kl. 19?")
 };
 
 // GetStreamingResponseAsync med MCP tools - tool calls håndteres automatisk!
@@ -442,27 +507,7 @@ await foreach (var update in chatClient.GetStreamingResponseAsync(
     Console.Write(update.Text);
 }
 
-Console.WriteLine("\n\nDone!");
-
-#!markdown
-
-### 4.6 Verificer
-
-#!csharp
-
-var mcpFilePath = @"HelloMcpWorld.cs";
-
-if (File.Exists(mcpFilePath))
-{
-    Console.WriteLine("SUCCESS! MCP tool created the file:");
-    Console.WriteLine(new string('-', 40));
-    Console.WriteLine(File.ReadAllText(mcpFilePath));
-    Console.WriteLine(new string('-', 40));
-}
-else
-{
-    Console.WriteLine("File was NOT created. Check output above.");
-}
+Console.WriteLine("\n\n✅ Done!")
 
 #!markdown
 
