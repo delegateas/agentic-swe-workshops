@@ -543,14 +543,14 @@ async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> t
     {
         new Message
         {
-            Role = ChatRole.System,
+            Role = OllamaSharp.Models.Chat.ChatRole.System,
             Content = """
                 Du er en hjælpsom EV-ladnings assistent for ChargeSmart netværket i København.
                 Brug de tilgængelige tools til at besvare spørgsmål om ladestationer,
                 tilgængelighed, og priser. Svar altid på dansk.
                 """
         },
-        new Message { Role = ChatRole.User, Content = userMessage }
+        new Message { Role = OllamaSharp.Models.Chat.ChatRole.User, Content = userMessage }
     };
 
     var ollamaTools = tools.Values.Select(ToOllamaFormat).ToList();
@@ -613,7 +613,7 @@ async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> t
                 // 4. Tilføj resultat til messages
                 messages.Add(new Message
                 {
-                    Role = ChatRole.Tool,
+                    Role = OllamaSharp.Models.Chat.ChatRole.Tool,
                     Content = result
                 });
             }
@@ -621,7 +621,7 @@ async Task<string> RunAgent(string userMessage, Dictionary<string, SimpleTool> t
             {
                 messages.Add(new Message
                 {
-                    Role = ChatRole.Tool,
+                    Role = OllamaSharp.Models.Chat.ChatRole.Tool,
                     Content = $"Error: Unknown tool {toolName}"
                 });
             }
