@@ -1100,12 +1100,12 @@ Opret filen `.github/skills/ev-charging-advisor/SKILL.md`:
 ```yaml
 ---
 name: ev-charging-advisor
-description: Expert advice on EV charging optimization for ChargeSmart network
+description: Ekspertrådgivning om optimering af elbil-ladning på ChargeSmart netværket
 triggers:
-  - "when user asks about charging costs"
-  - "when user wants to find cheapest charging time"
-  - "when user asks about EV battery tips"
-  - "when user mentions ChargeSmart or EV charging"
+  - "når bruger spørger om ladepris"
+  - "når bruger vil finde billigste ladetidspunkt"
+  - "når bruger spørger om batteri-tips"
+  - "når bruger nævner ChargeSmart eller elbil-ladning"
 ---
 
 # EV Charging Advisor
