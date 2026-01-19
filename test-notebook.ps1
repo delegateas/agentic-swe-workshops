@@ -31,11 +31,17 @@ if (-not $replInstalled) {
 }
 Write-Host "  dotnet-repl ready" -ForegroundColor Green
 
-# 4. Run the notebook
+# 4. Setup output paths
+$timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$logDir = ".test-logs"
+if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir | Out-Null }
+$logPath = "$logDir/$timestamp"
+
+# 5. Run the notebook with logging
 Write-Host "`nRunning notebook..." -ForegroundColor Cyan
 $startTime = Get-Date
 
-dotnet repl --run "agents-mcp-skills.dib" --exit-after-run
+dotnet repl --run "agents-mcp-skills.dib" --exit-after-run --log-path $logPath 2>&1 | Tee-Object -Variable output
 $exitCode = $LASTEXITCODE
 
 $duration = (Get-Date) - $startTime
@@ -45,6 +51,14 @@ if ($exitCode -eq 0) {
     Write-Host "SUCCESS: All cells executed without errors" -ForegroundColor Green
 } else {
     Write-Host "FAILED: Exit code $exitCode" -ForegroundColor Red
+    Write-Host "`nLogs saved to: $logPath" -ForegroundColor Yellow
+
+    # Show any error lines from output
+    $errors = $output | Select-String -Pattern "error|exception|fail" -CaseSensitive:$false
+    if ($errors) {
+        Write-Host "`nErrors found:" -ForegroundColor Red
+        $errors | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+    }
 }
 
 exit $exitCode

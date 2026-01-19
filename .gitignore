@@ -8,3 +8,6 @@ HelloMcpWorld.cs
 # Build output
 bin/
 obj/
+
+# Test logs
+.test-logs/
