@@ -12,31 +12,32 @@ En praktisk workshop hvor vi udforsker den nye verden af **agentic software engi
 
 ## Agenda (ca. 3,5 timer)
 
-| Tid | Emne |
-|-----|------|
-| 25 min | Intro, Recap & Polyglot Notebooks |
-| 60 min | Agenter - teori og byg din egen |
-| 20 min | Abstraktionsstigen – OllamaSharp.Tool |
-| 15 min | *Pause* |
-| 50 min | Abstraktionsstigen – MCP |
-| 40 min | Skills – teori og prøv med GitHub Copilot |
-| 10 min | Afrunding |
+| Tid | Emne | Øvelser |
+|-----|------|---------|
+| 20 min | Intro, Recap & Polyglot Notebooks | |
+| 70 min | Agenter - teori og byg din egen | **Øvelse 1:** Tool Execute-funktioner, **Øvelse 2:** Human-in-the-loop |
+| 15 min | Abstraktionsstigen – OllamaSharp.Tool | *Valgfri* |
+| 15 min | *Pause* | |
+| 45 min | Abstraktionsstigen – MCP | **Øvelse 3:** AIFunction Tools |
+| 20 min | Extension: get_nearest_station | **Øvelse 4:** Nyt tool |
+| 25 min | Skills – teori og prøv med GitHub Copilot | SKILL.md |
+| 10 min | Afrunding | |
 
 ---
 
 ## To Separate Veje
 
 ```
-VEJ A: Byg Din Egen Agent (Del 1-3)
+VEJ A: Byg Din Egen Agent (Del 1-3 + Extension)
 ┌──────────────────────────────────────────────────────────────┐
 │  Del 1: SimpleTool + Manuel Loop                             │
-│     ↓ "Jeg forstår hvordan det virker"                       │
-│  Del 2: OllamaSharp.Tool (samme, men bibliotek)              │
-│     ↓ "Bibliotek pakker de samme koncepter"                  │
-│  Del 3: MCP erstatter inline tools                           │
-│     → Samme agent, men tools fra MCP servere                 │
-│     → IChatClient + UseFunctionInvocation() = automatisk loop│
-│     → "USB-C metafor" - standardiseret connectivity          │
+│     → Øvelse 1: Skriv Execute-funktioner                     │
+│     → Øvelse 2: Human-in-the-loop bekræftelse                │
+│  Del 2: OllamaSharp.Tool (valgfri sammenligning)             │
+│  Del 3: MCP + AIFunction                                     │
+│     → Øvelse 3: AIFunctionFactory tools                      │
+│  Extension: Udvid med nyt tool                               │
+│     → Øvelse 4: get_nearest_station                          │
 └──────────────────────────────────────────────────────────────┘
 
 VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
@@ -55,7 +56,7 @@ VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
 #!markdown
 
 # Del 0: Intro, Recap & Polyglot Notebooks
-*25 minutter*
+*20 minutter*
 
 #!markdown
 
@@ -238,7 +239,7 @@ catch
 ---
 
 # Del 1: Agenter - teori og byg din egen
-*60 minutter*
+*70 minutter inkl. øvelser*
 
 > **"The LLM never actually touches your filesystem. It just *asks* for things to happen."**
 > — Mihail Eric, ["The Emperor Has No Clothes"](https://www.mihaileric.com/The-Emperor-Has-No-Clothes/)
@@ -346,21 +347,21 @@ Vi arbejder med et fiktivt EV-ladenetværk i København:
 
 #!csharp
 
-// Station data
-record StationInfo(string Id, string Name, string Location, int PowerKw, string Type);
+// Station data (med koordinater til øvelse 4: get_nearest_station)
+record StationInfo(string Id, string Name, string Location, int PowerKw, string Type, double Latitude, double Longitude);
 
 var stations = new Dictionary<string, StationInfo>
 {
-    ["CPH-001"] = new("CPH-001", "Nørreport Station", "Nørreport", 150, "ultra-fast"),
-    ["CPH-002"] = new("CPH-002", "Fisketorvet Parking", "Fisketorvet", 50, "fast"),
-    ["CPH-003"] = new("CPH-003", "Tivoli Garage", "Tivoli", 50, "fast"),
-    ["CPH-004"] = new("CPH-004", "Ørestad Center", "Ørestad", 150, "ultra-fast"),
-    ["CPH-005"] = new("CPH-005", "Amager Strandpark", "Amager", 22, "slow"),
-    ["CPH-006"] = new("CPH-006", "Nørrebro Runddel", "Nørrebro", 50, "fast"),
-    ["CPH-007"] = new("CPH-007", "Frederiksberg Have", "Frederiksberg", 7, "slow"),
-    ["CPH-008"] = new("CPH-008", "Kastrup Lufthavn P4", "Kastrup", 150, "ultra-fast"),
-    ["CPH-009"] = new("CPH-009", "Valby Langgade", "Valby", 22, "slow"),
-    ["CPH-010"] = new("CPH-010", "Hellerup Station", "Hellerup", 50, "fast"),
+    ["CPH-001"] = new("CPH-001", "Nørreport Station", "Nørreport", 150, "ultra-fast", 55.6839, 12.5715),
+    ["CPH-002"] = new("CPH-002", "Fisketorvet Parking", "Fisketorvet", 50, "fast", 55.6692, 12.5519),
+    ["CPH-003"] = new("CPH-003", "Tivoli Garage", "Tivoli", 50, "fast", 55.6736, 12.5681),
+    ["CPH-004"] = new("CPH-004", "Ørestad Center", "Ørestad", 150, "ultra-fast", 55.6310, 12.5770),
+    ["CPH-005"] = new("CPH-005", "Amager Strandpark", "Amager", 22, "slow", 55.6520, 12.6050),
+    ["CPH-006"] = new("CPH-006", "Nørrebro Runddel", "Nørrebro", 50, "fast", 55.7015, 12.5450),
+    ["CPH-007"] = new("CPH-007", "Frederiksberg Have", "Frederiksberg", 7, "slow", 55.6784, 12.5293),
+    ["CPH-008"] = new("CPH-008", "Kastrup Lufthavn P4", "Kastrup", 150, "ultra-fast", 55.6180, 12.6560),
+    ["CPH-009"] = new("CPH-009", "Valby Langgade", "Valby", 22, "slow", 55.6631, 12.5120),
+    ["CPH-010"] = new("CPH-010", "Hellerup Station", "Hellerup", 50, "fast", 55.7280, 12.5720),
 };
 
 // Simuler aktive sessioner
@@ -385,11 +386,33 @@ Console.WriteLine($"✅ Loaded {stations.Count} stationer, {activeSessions.Count
 
 #!markdown
 
-## 1.4 Definer ChargeSmart Tools
+## 1.4 Øvelse 1: Forstå Execute-funktionerne til ChargeSmart Tools
+*~15 minutter*
 
-Nu definerer vi 3 tools med vores SimpleTool record:
+Nu skal du **forstå og evt. modificere** `Execute`-funktionerne for 3 ChargeSmart tools.
+
+**📋 Opgave:** Før du kører cellen nedenfor:
+1. Læs koden igennem og forstå hvad hver funktion gør
+2. Prøv at skjule koden og skrive din egen version (brug hints nedenfor)
+3. Sammenlign med løsningen og kør cellen
+
+**Du har adgang til:**
+- `stations` - Dictionary med alle stationer (ID → StationInfo)
+- `activeSessions` - Dictionary med aktive sessioner (stationId → session info)
+- `GetTariff(int hour)` - Returnerer pris pr. kWh for en given time
+
+**Krav til de 3 tools:**
+
+| Tool | Input | Output |
+|------|-------|--------|
+| `get_station_status` | stationId (string) | Status på én station (ledig/optaget, kW, type) |
+| `list_stations` | *ingen* | Liste over alle stationer med status |
+| `calculate_charging_cost` | kwh (number), hour (int) | Pris for at lade X kWh på tidspunkt Y |
 
 #!csharp
+
+// 🎯 ØVELSE 1: Studer disse Execute-funktioner!
+// Tip: args er et JsonElement - brug args.GetProperty("name").GetString() osv.
 
 var tools = new Dictionary<string, SimpleTool>
 {
@@ -399,16 +422,20 @@ var tools = new Dictionary<string, SimpleTool>
         ParameterSchema: """{"type":"object","properties":{"stationId":{"type":"string","description":"Station ID like CPH-001"}},"required":["stationId"]}""",
         Execute: args =>
         {
+            // 1. Hent stationId fra args
             var stationId = args.GetProperty("stationId").GetString()!;
 
+            // 2. Slå op i stations dictionary
             if (!stations.TryGetValue(stationId, out var station))
                 return $"Error: Station {stationId} not found";
 
+            // 3. Tjek om der er en aktiv session
             var hasSession = activeSessions.TryGetValue(stationId, out var session);
 
+            // 4. Returner beskrivende streng
             return hasSession
                 ? $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger."
-            : $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
+                : $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
         }
     ),
 
@@ -418,6 +445,7 @@ var tools = new Dictionary<string, SimpleTool>
         ParameterSchema: """{"type":"object","properties":{}}""",
         Execute: _ =>
         {
+            // LINQ til at formatere alle stationer
             var lines = stations.Values.Select(s =>
             {
                 var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
@@ -465,23 +493,160 @@ foreach (var tool in tools.Values)
 
 #!markdown
 
-### Test tools direkte (uden LLM)
+### Hints til Øvelse 1
+
+<details>
+<summary>💡 Hint 1: Sådan læser du fra JsonElement</summary>
+
+```csharp
+// Hent en string property
+var stationId = args.GetProperty("stationId").GetString()!;
+
+// Hent et tal (kan være string eller number i JSON)
+var kwhProp = args.GetProperty("kwh");
+var kwh = kwhProp.ValueKind == JsonValueKind.String
+    ? double.Parse(kwhProp.GetString()!, System.Globalization.CultureInfo.InvariantCulture)
+    : kwhProp.GetDouble();
+```
+
+</details>
+
+<details>
+<summary>💡 Hint 2: get_station_status struktur</summary>
+
+```csharp
+Execute: args =>
+{
+    var stationId = args.GetProperty("stationId").GetString()!;
+
+    if (!stations.TryGetValue(stationId, out var station))
+        return $"Error: Station {stationId} not found";
+
+    var hasSession = activeSessions.TryGetValue(stationId, out var session);
+
+    // Returner forskellige beskeder baseret på hasSession
+    return hasSession
+        ? $"Station {stationId}: IN USE..."
+        : $"Station {stationId}: AVAILABLE...";
+}
+```
+
+</details>
+
+<details>
+<summary>💡 Hint 3: list_stations med LINQ</summary>
+
+```csharp
+Execute: _ =>
+{
+    var lines = stations.Values.Select(s =>
+    {
+        var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
+        return $"- {s.Id}: {s.Name} - {status}";
+    });
+    return string.Join("\n", lines);
+}
+```
+
+</details>
+
+<details>
+<summary>✅ Fuld løsning: Alle 3 tools</summary>
+
+```csharp
+var tools = new Dictionary<string, SimpleTool>
+{
+    ["get_station_status"] = new(
+        Name: "get_station_status",
+        Description: "Get real-time status of an EV charging station including availability, power level, and current session info",
+        ParameterSchema: """{"type":"object","properties":{"stationId":{"type":"string","description":"Station ID like CPH-001"}},"required":["stationId"]}""",
+        Execute: args =>
+        {
+            var stationId = args.GetProperty("stationId").GetString()!;
+
+            if (!stations.TryGetValue(stationId, out var station))
+                return $"Error: Station {stationId} not found";
+
+            var hasSession = activeSessions.TryGetValue(stationId, out var session);
+
+            return hasSession
+                ? $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger."
+                : $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
+        }
+    ),
+
+    ["list_stations"] = new(
+        Name: "list_stations",
+        Description: "List all EV charging stations in the ChargeSmart network with their current availability",
+        ParameterSchema: """{"type":"object","properties":{}}""",
+        Execute: _ =>
+        {
+            var lines = stations.Values.Select(s =>
+            {
+                var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
+                return $"- {s.Id}: {s.Name} ({s.Location}) - {s.PowerKw}kW {s.Type} - {status}";
+            });
+            return "ChargeSmart Network Stations:\n" + string.Join("\n", lines);
+        }
+    ),
+
+    ["calculate_charging_cost"] = new(
+        Name: "calculate_charging_cost",
+        Description: "Calculate the cost of charging based on kWh needed and time of day",
+        ParameterSchema: """{"type":"object","properties":{"kwh":{"type":"number","description":"Energy needed in kWh"},"hour":{"type":"integer","description":"Hour of day (0-23)"}},"required":["kwh","hour"]}""",
+        Execute: args =>
+        {
+            var kwhProp = args.GetProperty("kwh");
+            var hourProp = args.GetProperty("hour");
+            var kwh = kwhProp.ValueKind == JsonValueKind.String
+                ? double.Parse(kwhProp.GetString()!, System.Globalization.CultureInfo.InvariantCulture)
+                : kwhProp.GetDouble();
+            var hour = hourProp.ValueKind == JsonValueKind.String
+                ? int.Parse(hourProp.GetString()!)
+                : hourProp.GetInt32();
+            var tariff = GetTariff(hour);
+            var cost = (decimal)kwh * tariff;
+
+            var period = hour switch
+            {
+                >= 0 and < 6 => "off-peak",
+                >= 17 and < 21 => "peak",
+                _ => "normal"
+            };
+
+            return $"Charging {kwh:F1} kWh at {hour:00}:00 ({period} tariff: {tariff:F2} DKK/kWh) = {cost:F2} DKK";
+        }
+    )
+};
+```
+
+</details>
+
+#!markdown
+
+### Verificer din løsning
+
+Kør cellen nedenfor for at teste dine Execute-funktioner **uden LLM**:
 
 #!csharp
 
-// Test get_station_status
+// Test dine tools direkte!
+Console.WriteLine("=== Test get_station_status ===");
 var args1 = JsonDocument.Parse("""{"stationId": "CPH-001"}""").RootElement;
 Console.WriteLine(tools["get_station_status"].Execute(args1));
 Console.WriteLine();
 
-// Test list_stations
+Console.WriteLine("=== Test list_stations ===");
 var args2 = JsonDocument.Parse("{}").RootElement;
 Console.WriteLine(tools["list_stations"].Execute(args2));
 Console.WriteLine();
 
-// Test calculate_charging_cost
+Console.WriteLine("=== Test calculate_charging_cost ===");
 var args3 = JsonDocument.Parse("""{"kwh": 50, "hour": 18}""").RootElement;
 Console.WriteLine(tools["calculate_charging_cost"].Execute(args3));
+Console.WriteLine();
+
+Console.WriteLine("✅ Alle tests kørte! Hvis du ser output ovenfor, virker dine tools.");
 
 #!markdown
 
@@ -643,7 +808,222 @@ Console.WriteLine("✅ RunAgent function defined (~50 lines)");
 
 #!markdown
 
-## 1.6 Test din Agent!
+## 1.6 Øvelse 2: Human-in-the-Loop Confirmation
+*~15 minutter*
+
+I produktion vil du ofte have tools der gør "farlige" ting - f.eks. starter en ladesession, foretager en betaling, eller sletter data. Før sådanne tools eksekveres, bør agenten **bede om bekræftelse**.
+
+**Scenarie:** Forestil dig at `calculate_charging_cost` kunne udløse en forhåndsreservation eller pre-authorization på dit kort. Før vi eksekverer det, vil vi gerne have brugerens godkendelse.
+
+**Din opgave:** Modificer loopet så det beder om bekræftelse før "farlige" tools eksekveres.
+
+#!csharp
+
+// 🎯 ØVELSE 2: Tilføj human-in-the-loop confirmation
+
+// Definer hvilke tools der kræver bekræftelse
+var dangerousTools = new HashSet<string> { "calculate_charging_cost" };
+
+async Task<string> RunAgentWithConfirmation(string userMessage, Dictionary<string, SimpleTool> tools)
+{
+    var ollama = new OllamaApiClient("http://localhost:11434");
+
+    var messages = new List<Message>
+    {
+        new Message
+        {
+            Role = OllamaSharp.Models.Chat.ChatRole.System,
+            Content = """
+                Du er en hjælpsom EV-ladnings assistent for ChargeSmart netværket i København.
+                Brug de tilgængelige tools til at besvare spørgsmål om ladestationer,
+                tilgængelighed, og priser. Svar altid på dansk.
+                """
+        },
+        new Message { Role = OllamaSharp.Models.Chat.ChatRole.User, Content = userMessage }
+    };
+
+    var ollamaTools = tools.Values.Select(ToOllamaFormat).ToList();
+    var maxIterations = 10;
+    var iteration = 0;
+
+    while (iteration < maxIterations)
+    {
+        iteration++;
+        Console.WriteLine($"\n--- Iteration {iteration} ---");
+
+        var request = new ChatRequest
+        {
+            Model = selectedModelName ?? "llama3.1:8b",
+            Messages = messages,
+            Tools = ollamaTools,
+            Stream = false
+        };
+
+        ChatResponseStream? response = null;
+        await foreach (var chunk in ollama.ChatAsync(request))
+        {
+            response = chunk;
+        }
+
+        var assistantMessage = response?.Message;
+        if (assistantMessage == null)
+            return "Error: No response from LLM";
+
+        messages.Add(assistantMessage);
+
+        if (assistantMessage.ToolCalls == null || !assistantMessage.ToolCalls.Any())
+        {
+            Console.WriteLine("✅ LLM finished (no tool calls)");
+            return assistantMessage.Content ?? "No response";
+        }
+
+        Console.WriteLine($"🔧 LLM wants to call {assistantMessage.ToolCalls.Count()} tool(s)");
+
+        foreach (var toolCall in assistantMessage.ToolCalls)
+        {
+            var toolName = toolCall.Function?.Name ?? "unknown";
+            Console.WriteLine($"   Tool: {toolName}");
+            Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
+
+            // TODO: Tilføj bekræftelseslogik her!
+            // Hvis toolName er i dangerousTools, bed om bekræftelse
+            // Brug Console.Write() og Console.ReadLine() til at spørge brugeren
+            // Hvis brugeren svarer andet end "y", skip dette tool call
+
+            if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
+            {
+                var argsJson = JsonSerializer.Serialize(toolCall.Function.Arguments);
+                var argsElement = JsonDocument.Parse(argsJson).RootElement;
+
+                var result = tool.Execute(argsElement);
+                Console.WriteLine($"   📤 Result: {result.Substring(0, Math.Min(80, result.Length))}...");
+
+                messages.Add(new Message
+                {
+                    Role = OllamaSharp.Models.Chat.ChatRole.Tool,
+                    Content = result
+                });
+            }
+            else
+            {
+                messages.Add(new Message
+                {
+                    Role = OllamaSharp.Models.Chat.ChatRole.Tool,
+                    Content = $"Error: Unknown tool {toolName}"
+                });
+            }
+        }
+    }
+
+    return "Max iterations reached";
+}
+
+Console.WriteLine("✅ RunAgentWithConfirmation defined - men mangler bekræftelseslogik!");
+
+#!markdown
+
+### Hints til Øvelse 2
+
+<details>
+<summary>💡 Hint 1: Hvor skal bekræftelsen tilføjes?</summary>
+
+Bekræftelsen skal ind i foreach-loopet, **lige før** vi kalder `tool.Execute()`.
+
+```csharp
+foreach (var toolCall in assistantMessage.ToolCalls)
+{
+    var toolName = toolCall.Function?.Name ?? "unknown";
+
+    // ← Tilføj bekræftelseslogik HER, før if-blokken nedenfor
+
+    if (tools.TryGetValue(toolName, out var tool) ...
+```
+
+</details>
+
+<details>
+<summary>💡 Hint 2: Bekræftelseslogikken</summary>
+
+```csharp
+// Tjek om tool er "farligt"
+if (dangerousTools.Contains(toolName))
+{
+    Console.Write($"⚠️  Execute '{toolName}'? (y/n): ");
+    var confirmation = Console.ReadLine()?.Trim().ToLower();
+    if (confirmation != "y")
+    {
+        Console.WriteLine("   ⏭️  Skipped by user");
+        messages.Add(new Message
+        {
+            Role = OllamaSharp.Models.Chat.ChatRole.Tool,
+            Content = $"Tool {toolName} was skipped by user"
+        });
+        continue;  // Spring til næste tool call
+    }
+}
+```
+
+</details>
+
+<details>
+<summary>✅ Fuld løsning: Modificeret loop</summary>
+
+```csharp
+foreach (var toolCall in assistantMessage.ToolCalls)
+{
+    var toolName = toolCall.Function?.Name ?? "unknown";
+    Console.WriteLine($"   Tool: {toolName}");
+    Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
+
+    // 🛡️ Human-in-the-loop bekræftelse
+    if (dangerousTools.Contains(toolName))
+    {
+        Console.Write($"⚠️  Execute '{toolName}'? (y/n): ");
+        var confirmation = Console.ReadLine()?.Trim().ToLower();
+        if (confirmation != "y")
+        {
+            Console.WriteLine("   ⏭️  Skipped by user");
+            messages.Add(new Message
+            {
+                Role = OllamaSharp.Models.Chat.ChatRole.Tool,
+                Content = $"Tool {toolName} was skipped by user"
+            });
+            continue;
+        }
+        Console.WriteLine("   ✅ Confirmed by user");
+    }
+
+    if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
+    {
+        // ... resten af koden
+    }
+}
+```
+
+**Lærdom:** Human-in-the-loop er kritisk for produktions-agents. Du bestemmer hvilke handlinger der kræver godkendelse!
+
+</details>
+
+#!markdown
+
+### Test med bekræftelse
+
+Når du har implementeret bekræftelseslogikken, test med denne query:
+
+#!csharp
+
+// Test human-in-the-loop (denne celle kræver din implementation!)
+var result = await RunAgentWithConfirmation(
+    "Hvad koster det at lade 50 kWh kl. 18?",
+    tools
+);
+
+Console.WriteLine("\n=== Final Response ===");
+Console.WriteLine(result);
+
+#!markdown
+
+## 1.7 Test din Agent!
 
 #!csharp
 
@@ -683,17 +1063,21 @@ Du har nu:
 1. ✅ Set præcis hvad LLM'en modtager (JSON tool definitions)
 2. ✅ Set præcis hvad LLM'en returnerer (JSON tool calls)
 3. ✅ Bygget `SimpleTool` - en transparent tool abstraction
-4. ✅ Bygget det komplette agentic loop (~50 linjer!)
-5. ✅ Kørt en agent med 3 ChargeSmart tools
+4. ✅ **Øvelse 1:** Skrevet Execute-funktioner til 3 ChargeSmart tools
+5. ✅ Set det komplette agentic loop (~50 linjer!)
+6. ✅ **Øvelse 2:** Tilføjet human-in-the-loop confirmation til loopet
+7. ✅ Kørt en agent med dine tools
 
 **Nøgleindsigt:** Det er så simpelt. ~50 linjer loop + ~10 linjer per tool. *The emperor has no clothes!*
+
+**Lærdom fra Øvelse 2:** I produktion er human-in-the-loop kritisk. Du bestemmer hvilke handlinger der kræver godkendelse!
 
 ---
 
 #!markdown
 
 # Del 2: Abstraktionsstigen – OllamaSharp.Tool
-*20 minutter*
+*15 minutter (valgfri)*
 
 Nu hvor du forstår hvad der sker "under the hood", lad os se hvordan OllamaSharp pakker det samme.
 
@@ -799,7 +1183,7 @@ if (toolCall.Function.Name == "get_station_status")
 #!markdown
 
 # Del 3: Abstraktionsstigen – MCP
-*50 minutter*
+*45 minutter inkl. øvelse*
 
 Vi fortsætter op ad abstraktionsstigen: SimpleTool → OllamaSharp.Tool → **MCP**.
 
@@ -860,16 +1244,128 @@ Console.WriteLine("✅ Microsoft.Extensions.AI indlæst!");
 
 #!markdown
 
-## 3.3 AIFunction Tools med Microsoft.Extensions.AI
+## 3.3 Øvelse 3: AIFunction Tools med Microsoft.Extensions.AI
+*~10 minutter*
 
 MCP er designet til **inter-proces** kommunikation (client og server i separate processer).
 I en notebook bruger vi i stedet `AIFunctionFactory` fra Microsoft.Extensions.AI, som giver samme tool-oplevelse **in-process**.
 
 > **Note:** I produktion ville du forbinde til en ekstern MCP server via `StdioClientTransport` eller `HttpClientTransport`.
 
+**📋 Opgave:** Sammenlign `AIFunctionFactory.Create()` med `SimpleTool`:
+- I Øvelse 1 brugte du `SimpleTool` med `Execute: args => { ... }` (JsonElement)
+- Her bruger du `AIFunctionFactory.Create((param) => { ... }, "name", "description")`
+- Parametrene er **typed** (string, int, double) i stedet for JsonElement!
+
+**Bemærk:** Logikken er den samme - kun signaturen er anderledes.
+
 #!csharp
 
-// Opret AIFunction tools fra vores ChargeSmart metoder
+// 🎯 ØVELSE 3: Opret AIFunction tools
+// Du kender allerede logikken fra Øvelse 1 - nu skal du bare bruge en anden signatur!
+
+var aiTools = new List<AITool>
+{
+    // Eksempel: get_station_status er givet
+    AIFunctionFactory.Create(
+        (string stationId) =>
+        {
+            if (!stations.TryGetValue(stationId, out var station))
+                return $"Error: Station {stationId} not found";
+
+            var hasSession = activeSessions.TryGetValue(stationId, out var session);
+            return hasSession
+                ? $"Station {stationId} ({station.Name}): IN USE by {session.vehicleId} since {session.start:HH:mm}, {session.kwh:F1} kWh delivered. {station.PowerKw}kW {station.Type} charger."
+                : $"Station {stationId} ({station.Name}): AVAILABLE. {station.PowerKw}kW {station.Type} charger at {station.Location}.";
+        },
+        "get_station_status",
+        "Get real-time status of an EV charging station. Parameter: stationId (e.g. CPH-001)"),
+
+    // list_stations - studer denne implementering
+    AIFunctionFactory.Create(
+        () =>
+        {
+            var lines = stations.Values.Select(s =>
+            {
+                var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
+                return $"- {s.Id}: {s.Name} ({s.Location}) - {s.PowerKw}kW {s.Type} - {status}";
+            });
+            return "ChargeSmart Network Stations:\n" + string.Join("\n", lines);
+        },
+        "list_stations",
+        "List all EV charging stations in the ChargeSmart network with their current availability"),
+
+    // calculate_charging_cost - studer denne implementering
+    AIFunctionFactory.Create(
+        (double kwh, int hour) =>
+        {
+            var tariff = GetTariff(hour);
+            var cost = (decimal)kwh * tariff;
+            var period = hour switch
+            {
+                >= 0 and < 6 => "off-peak",
+                >= 17 and < 21 => "peak",
+                _ => "normal"
+            };
+            return $"Charging {kwh:F1} kWh at {hour:00}:00 ({period} tariff: {tariff:F2} DKK/kWh) = {cost:F2} DKK";
+        },
+        "calculate_charging_cost",
+        "Calculate the cost of charging based on kWh needed and hour of day (0-23)")
+};
+
+Console.WriteLine($"🔌 Oprettet {aiTools.Count} AIFunction tools:");
+
+#!markdown
+
+### Hints til Øvelse 3
+
+<details>
+<summary>💡 Hint: list_stations</summary>
+
+```csharp
+AIFunctionFactory.Create(
+    () =>
+    {
+        var lines = stations.Values.Select(s =>
+        {
+            var status = activeSessions.ContainsKey(s.Id) ? "IN USE" : "AVAILABLE";
+            return $"- {s.Id}: {s.Name} ({s.Location}) - {s.PowerKw}kW {s.Type} - {status}";
+        });
+        return "ChargeSmart Network Stations:\n" + string.Join("\n", lines);
+    },
+    "list_stations",
+    "List all EV charging stations...")
+```
+
+</details>
+
+<details>
+<summary>💡 Hint: calculate_charging_cost</summary>
+
+```csharp
+AIFunctionFactory.Create(
+    (double kwh, int hour) =>
+    {
+        var tariff = GetTariff(hour);
+        var cost = (decimal)kwh * tariff;
+        var period = hour switch
+        {
+            >= 0 and < 6 => "off-peak",
+            >= 17 and < 21 => "peak",
+            _ => "normal"
+        };
+        return $"Charging {kwh:F1} kWh at {hour:00}:00 ({period} tariff: {tariff:F2} DKK/kWh) = {cost:F2} DKK";
+    },
+    "calculate_charging_cost",
+    "Calculate the cost of charging...")
+```
+
+</details>
+
+<details>
+<summary>✅ Fuld løsning: Alle 3 AIFunction tools</summary>
+
+```csharp
 var aiTools = new List<AITool>
 {
     AIFunctionFactory.Create(
@@ -915,12 +1411,9 @@ var aiTools = new List<AITool>
         "calculate_charging_cost",
         "Calculate the cost of charging based on kWh needed and hour of day (0-23)")
 };
+```
 
-Console.WriteLine($"🔌 Oprettet {aiTools.Count} AIFunction tools:");
-foreach (var tool in aiTools)
-{
-    Console.WriteLine($"   - {tool.Name}: {tool.Description}");
-}
+</details>
 
 #!markdown
 
@@ -982,7 +1475,7 @@ Console.WriteLine("\n\n✅ Done!")
 
 Du har nu:
 1. ✅ Forstået MCP som "USB-C for AI tools"
-2. ✅ Oprettet tools med `AIFunctionFactory` fra Microsoft.Extensions.AI
+2. ✅ **Øvelse 3:** Oprettet tools med `AIFunctionFactory` fra Microsoft.Extensions.AI
 3. ✅ Set hvordan `IChatClient.UseFunctionInvocation()` automatiserer loop'et
 4. ✅ Kørt en agent med automatiseret tool invocation
 
@@ -992,8 +1485,206 @@ Du har nu:
 
 #!markdown
 
+# Del 3.5: Øvelse 4 - Udvid med get_nearest_station
+*~20 minutter*
+
+Nu skal du **studere hvordan man udvider** agenten med et helt nyt tool! Dette er den vigtigste øvelse, fordi det simulerer det typiske workflow: du har en fungerende agent og skal tilføje ny funktionalitet.
+
+## Scenarie
+
+En bruger står på gaden og vil finde den **nærmeste ledige ladestation**. De kender deres GPS-koordinater og vil have en anbefaling.
+
+**📋 Opgave:** Studer implementeringen nedenfor og forstå logikken:
+1. Modtag brugerens latitude og longitude
+2. Filtrer alle **ledige** stationer (ikke optaget)
+3. Beregn afstanden til hver station med Haversine
+4. Returner den nærmeste
+
+## Stationskoordinater
+
+Alle stationer har nu latitude/longitude (vi tilføjede dem i starten):
+
+| Station | Lokation | Latitude | Longitude |
+|---------|----------|----------|-----------|
+| CPH-001 | Nørreport | 55.6839 | 12.5715 |
+| CPH-002 | Fisketorvet | 55.6692 | 12.5519 |
+| CPH-003 | Tivoli | 55.6736 | 12.5681 |
+| CPH-004 | Ørestad | 55.6310 | 12.5770 |
+| CPH-005 | Amager | 55.6520 | 12.6050 |
+| CPH-006 | Nørrebro | 55.7015 | 12.5450 |
+| CPH-007 | Frederiksberg | 55.6784 | 12.5293 |
+| CPH-008 | Kastrup | 55.6180 | 12.6560 |
+| CPH-009 | Valby | 55.6631 | 12.5120 |
+| CPH-010 | Hellerup | 55.7280 | 12.5720 |
+
+#!csharp
+
+// 🎯 ØVELSE 4: Implementer get_nearest_station
+
+// Haversine-formlen til at beregne afstand mellem to koordinater (i km)
+double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+{
+    const double R = 6371; // Jordens radius i km
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+            Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+            Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+    var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+    return R * c;
+}
+
+// Test: Afstand fra Rådhuspladsen (55.6761, 12.5683) til Nørreport (CPH-001)
+var testDistance = CalculateDistance(55.6761, 12.5683, 55.6839, 12.5715);
+Console.WriteLine($"Test: Afstand fra Rådhuspladsen til Nørreport: {testDistance:F2} km");
+
+#!csharp
+
+// get_nearest_station - studer denne implementering!
+
+var getNearestStation = AIFunctionFactory.Create(
+    (double latitude, double longitude) =>
+    {
+        // 1. Filtrer ledige stationer
+        var availableStations = stations.Values
+            .Where(s => !activeSessions.ContainsKey(s.Id))
+            .ToList();
+
+        if (!availableStations.Any())
+            return "Ingen ledige stationer lige nu!";
+
+        // 2. Find nærmeste med LINQ
+        var nearest = availableStations
+            .Select(s => new {
+                Station = s,
+                Distance = CalculateDistance(latitude, longitude, s.Latitude, s.Longitude)
+            })
+            .OrderBy(x => x.Distance)
+            .First();
+
+        // 3. Returner beskrivende streng
+        return $"Nærmeste ledige station: {nearest.Station.Id} ({nearest.Station.Name}) - " +
+               $"{nearest.Distance:F2} km væk. " +
+               $"{nearest.Station.PowerKw}kW {nearest.Station.Type} charger ved {nearest.Station.Location}.";
+    },
+    "get_nearest_station",
+    "Find the nearest available charging station. Parameters: latitude and longitude of user's current position"
+);
+
+// Tilføj til aiTools
+aiTools.Add(getNearestStation);
+Console.WriteLine($"🔌 aiTools har nu {aiTools.Count} tools (inkl. get_nearest_station)");
+
+#!markdown
+
+### Hints til Øvelse 4
+
+<details>
+<summary>💡 Hint 1: Filtrer ledige stationer</summary>
+
+```csharp
+var availableStations = stations.Values
+    .Where(s => !activeSessions.ContainsKey(s.Id))
+    .ToList();
+
+if (!availableStations.Any())
+    return "Ingen ledige stationer lige nu!";
+```
+
+</details>
+
+<details>
+<summary>💡 Hint 2: Beregn afstande og find minimum</summary>
+
+```csharp
+var nearest = availableStations
+    .Select(s => new {
+        Station = s,
+        Distance = CalculateDistance(latitude, longitude, s.Latitude, s.Longitude)
+    })
+    .OrderBy(x => x.Distance)
+    .First();
+```
+
+</details>
+
+<details>
+<summary>✅ Fuld løsning</summary>
+
+```csharp
+var getNearestStation = AIFunctionFactory.Create(
+    (double latitude, double longitude) =>
+    {
+        // Filtrer ledige stationer
+        var availableStations = stations.Values
+            .Where(s => !activeSessions.ContainsKey(s.Id))
+            .ToList();
+
+        if (!availableStations.Any())
+            return "Ingen ledige stationer lige nu!";
+
+        // Find nærmeste
+        var nearest = availableStations
+            .Select(s => new {
+                Station = s,
+                Distance = CalculateDistance(latitude, longitude, s.Latitude, s.Longitude)
+            })
+            .OrderBy(x => x.Distance)
+            .First();
+
+        return $"Nærmeste ledige station: {nearest.Station.Id} ({nearest.Station.Name}) - " +
+               $"{nearest.Distance:F2} km væk. " +
+               $"{nearest.Station.PowerKw}kW {nearest.Station.Type} charger ved {nearest.Station.Location}.";
+    },
+    "get_nearest_station",
+    "Find the nearest available charging station. Parameters: latitude and longitude of user's current position"
+);
+```
+
+</details>
+
+#!markdown
+
+### Test dit nye tool
+
+#!csharp
+
+// Test get_nearest_station med en position nær Rådhuspladsen
+Console.WriteLine("=== Test fra Rådhuspladsen (55.6761, 12.5683) ===\n");
+
+var messages = new List<ChatMessage>
+{
+    new(Microsoft.Extensions.AI.ChatRole.User,
+        "Jeg står på Rådhuspladsen (koordinater: 55.6761, 12.5683). Hvor er den nærmeste ledige ladestation?")
+};
+
+await foreach (var update in chatClient.GetStreamingResponseAsync(
+    messages,
+    new() { Tools = [.. aiTools] }))
+{
+    Console.Write(update.Text);
+}
+
+Console.WriteLine("\n\n✅ Test færdig!");
+
+#!markdown
+
+## Checkpoint Øvelse 4
+
+Du har nu:
+1. ✅ Forstået Haversine-formlen til afstandsberegning
+2. ✅ Implementeret `get_nearest_station` med LINQ og afstandssortering
+3. ✅ Udvidet en eksisterende agent med ny funktionalitet
+4. ✅ Testet med en realistisk brugerforespørgsel
+
+**Lærdom:** At udvide en agent er ofte nemmere end at bygge en fra bunden. Du tilføjer bare et nyt tool til listen!
+
+---
+
+#!markdown
+
 # Del 4: Skills – teori og prøv med GitHub Copilot
-*40 minutter*
+*25 minutter*
 
 ## SEPARAT VEJ
 
