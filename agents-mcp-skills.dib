@@ -925,24 +925,7 @@ Console.WriteLine("✅ RunAgentWithConfirmation defined - men mangler bekræftel
 ### Hints til Øvelse 2
 
 <details>
-<summary>💡 Hint 1: Hvor skal bekræftelsen tilføjes?</summary>
-
-Bekræftelsen skal ind i foreach-loopet, **lige før** vi kalder `tool.Execute()`.
-
-```csharp
-foreach (var toolCall in assistantMessage.ToolCalls)
-{
-    var toolName = toolCall.Function?.Name ?? "unknown";
-
-    // ← Tilføj bekræftelseslogik HER, før if-blokken nedenfor
-
-    if (tools.TryGetValue(toolName, out var tool) ...
-```
-
-</details>
-
-<details>
-<summary>💡 Hint 2: Bekræftelseslogikken</summary>
+<summary>💡 Hint: Bekræftelseslogikken</summary>
 
 ```csharp
 // Tjek om tool er "farligt"
