@@ -2,10 +2,6 @@
 
 Hands-on workshops for building with AI agents. Learn by doing, not just reading.
 
-## The Big Idea
-
-AI agents are simpler than you think — the core loop is ~200 lines of code. These workshops demystify agents through interactive exercises using Polyglot Notebooks, so you can experiment and see results immediately.
-
 ## Workshops
 
 | Workshop | Description | Duration |
