@@ -21,8 +21,17 @@ AI agents are simpler than you think — the core loop is ~200 lines of code. Th
 
 Workshops use Polyglot Notebooks (`.dib` files) for interactive code execution.
 
+## Quick Setup
+
+Run the setup script to pre-download dependencies (makes notebook load faster):
+
+```powershell
+./setup.ps1
+```
+
 ## Quick Start
 
 1. Clone this repo
-2. Open a workshop `.dib` file in VS Code
-3. Follow the instructions in the notebook
+2. Run `./setup.ps1` to pre-warm the NuGet cache
+3. Open a workshop `.dib` file in VS Code
+4. Follow the instructions in the notebook
