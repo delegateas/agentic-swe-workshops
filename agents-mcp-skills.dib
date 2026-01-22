@@ -1936,6 +1936,12 @@ Nu hvor du har bygget din egen agent-loop og forstår abstraktionerne, kan du ud
 
 Du har nu set det selv. Du kan bygge en agent. Du forstår hvad der sker.
 
+**Hvorfor er dette vigtigt?**
+
+> Whilst software development/programming is now dead. We however deeply need software engineers with these skills who understand that LLMs are a new form of programmable computer. If you haven’t built your own coding agent yet - please do.
+> — [Geoffrey Huntley](https://ghuntley.com/loop/)
+
+
 ## Ressourcer
 
 - [MCP Documentation](https://modelcontextprotocol.io)
