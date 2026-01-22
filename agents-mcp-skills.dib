@@ -824,7 +824,12 @@ I produktion vil du ofte have tools der gør "farlige" ting - f.eks. starter en 
 // Definer hvilke tools der kræver bekræftelse
 var dangerousTools = new HashSet<string> { "calculate_charging_cost" };
 
-async Task<string> RunAgentWithConfirmation(string userMessage, Dictionary<string, SimpleTool> tools)
+// Callback-baseret confirmation (dependency injection pattern)
+// confirmAction: funktion der tager toolName og returnerer true hvis confirmed
+async Task<string> RunAgentWithConfirmation(
+    string userMessage,
+    Dictionary<string, SimpleTool> tools,
+    Func<string, Task<bool>>? confirmAction = null)
 {
     var ollama = new OllamaApiClient("http://localhost:11434");
 
@@ -886,9 +891,10 @@ async Task<string> RunAgentWithConfirmation(string userMessage, Dictionary<strin
             Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
 
             // TODO: Tilføj bekræftelseslogik her!
-            // Hvis toolName er i dangerousTools, bed om bekræftelse
-            // Brug Console.Write() og Console.ReadLine() til at spørge brugeren
-            // Hvis brugeren svarer andet end "y", skip dette tool call
+            // Hvis toolName er i dangerousTools OG confirmAction != null:
+            //   - Kald await confirmAction(toolName)
+            //   - Hvis false: skip dette tool call med continue
+            //   - Hvis true: fortsæt med at eksekvere tool
 
             if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
             {
@@ -918,7 +924,10 @@ async Task<string> RunAgentWithConfirmation(string userMessage, Dictionary<strin
     return "Max iterations reached";
 }
 
-Console.WriteLine("✅ RunAgentWithConfirmation defined - men mangler bekræftelseslogik!");
+Console.WriteLine("✅ RunAgentWithConfirmation defined med callback-baseret confirmation!");
+Console.WriteLine("💡 Test med cellerne nedenfor:");
+Console.WriteLine("   - Auto-confirm: simulerer bruger der siger 'ja'");
+Console.WriteLine("   - Auto-reject: simulerer bruger der siger 'nej'");
 
 #!markdown
 
@@ -928,12 +937,13 @@ Console.WriteLine("✅ RunAgentWithConfirmation defined - men mangler bekræftel
 <summary>💡 Hint: Bekræftelseslogikken</summary>
 
 ```csharp
-// Tjek om tool er "farligt"
-if (dangerousTools.Contains(toolName))
+// Tjek om tool er "farligt" OG vi har en confirmAction
+if (dangerousTools.Contains(toolName) && confirmAction != null)
 {
-    Console.Write($"⚠️  Execute '{toolName}'? (y/n): ");
-    var confirmation = Console.ReadLine()?.Trim().ToLower();
-    if (confirmation != "y")
+    Console.WriteLine($"   🛡️ Awaiting confirmation for '{toolName}'...");
+    var confirmed = await confirmAction(toolName);
+
+    if (!confirmed)
     {
         Console.WriteLine("   ⏭️  Skipped by user");
         messages.Add(new Message
@@ -943,6 +953,7 @@ if (dangerousTools.Contains(toolName))
         });
         continue;  // Spring til næste tool call
     }
+    Console.WriteLine("   ✅ Confirmed by user");
 }
 ```
 
@@ -958,12 +969,13 @@ foreach (var toolCall in assistantMessage.ToolCalls)
     Console.WriteLine($"   Tool: {toolName}");
     Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
 
-    // 🛡️ Human-in-the-loop bekræftelse
-    if (dangerousTools.Contains(toolName))
+    // 🛡️ Human-in-the-loop bekræftelse (callback pattern)
+    if (dangerousTools.Contains(toolName) && confirmAction != null)
     {
-        Console.Write($"⚠️  Execute '{toolName}'? (y/n): ");
-        var confirmation = Console.ReadLine()?.Trim().ToLower();
-        if (confirmation != "y")
+        Console.WriteLine($"   🛡️ Awaiting confirmation for '{toolName}'...");
+        var confirmed = await confirmAction(toolName);
+
+        if (!confirmed)
         {
             Console.WriteLine("   ⏭️  Skipped by user");
             messages.Add(new Message
@@ -983,7 +995,7 @@ foreach (var toolCall in assistantMessage.ToolCalls)
 }
 ```
 
-**Lærdom:** Human-in-the-loop er kritisk for produktions-agents. Du bestemmer hvilke handlinger der kræver godkendelse!
+**Lærdom:** Human-in-the-loop er kritisk for produktions-agents. Callback-pattern gør koden testbar og fleksibel!
 
 </details>
 
@@ -991,14 +1003,39 @@ foreach (var toolCall in assistantMessage.ToolCalls)
 
 ### Test med bekræftelse
 
-Når du har implementeret bekræftelseslogikken, test med denne query:
+Når du har implementeret bekræftelseslogikken, test med auto-confirm:
 
 #!csharp
 
-// Test human-in-the-loop (denne celle kræver din implementation!)
+// Test human-in-the-loop med auto-confirm (simulerer bruger der siger "ja")
 var result = await RunAgentWithConfirmation(
     "Hvad koster det at lade 50 kWh kl. 18?",
-    tools
+    tools,
+    confirmAction: (toolName) => {
+        Console.WriteLine($"   🤖 Auto-confirming '{toolName}'");
+        return Task.FromResult(true);
+    }
+);
+
+Console.WriteLine("\n=== Final Response ===");
+Console.WriteLine(result);
+
+#!markdown
+
+### Test med afvisning
+
+Test hvad der sker når brugeren afviser:
+
+#!csharp
+
+// Test human-in-the-loop hvor bruger afviser
+var result = await RunAgentWithConfirmation(
+    "Hvad koster det at lade 50 kWh kl. 18?",
+    tools,
+    confirmAction: (toolName) => {
+        Console.WriteLine($"   🚫 Auto-rejecting '{toolName}'");
+        return Task.FromResult(false);
+    }
 );
 
 Console.WriteLine("\n=== Final Response ===");
