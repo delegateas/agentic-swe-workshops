@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Common Commands
+
+```bash
+# Test notebook (requires Ollama running with llama3.1:8b)
+./test-agents-mcp-skills.ps1
+
+# Regenerate SVG from Mermaid source
+npx -y @mermaid-js/mermaid-cli -i images/file.mmd -o images/file.svg
+```
+
 ## Language / Sprog
 
 **VIGTIGT:** Workshop-notebooks (`agents-mcp-skills.dib`, `playground.dib`) skal skrives på **dansk**.
@@ -17,7 +27,11 @@ Eksempel:
 
 ## Repository Overview
 
-This repository contains workshop materials for agentic software engineering practices. Workshops are designed for hands-on learning with Polyglot Notebooks (.dib files). Primary language is C# with .NET Interactive kernel.
+Workshop materials for agentic software engineering practices using Polyglot Notebooks (.dib files) with C# and .NET Interactive kernel.
+
+**Notebooks:**
+- `agents-mcp-skills.dib` - Main workshop (3.5 hours): agents, MCP, skills
+- `playground.dib` - Scratch space for experimentation
 
 ## Prerequisites
 
@@ -70,27 +84,8 @@ Source files (`.mmd`) in `images/` folder are rendered to SVG for display in not
 
 **IMPORTANT**: Never delete `.mmd` source files! They are the source of truth.
 
-To regenerate after editing a `.mmd` file:
-```bash
-npx -y @mermaid-js/mermaid-cli -i file.mmd -o file.svg
-```
+Diagrams: `agentic-loop.mmd`, `ai-training-loop.mmd`, `agent-sdk-landscape.mmd`, `mcp-problem.mmd`, `mcp-solution.mmd`, `metr-timeline.mmd`
 
-## Git Workflow
+## Testing
 
-```bash
-git add -A
-git commit -m "feat: description"
-# Note: git push is handled by user (production deployment decision)
-```
-
-### Testing Before Commit
-
-When modifying code cells in `agents-mcp-skills.dib`, run the test script before committing:
-
-```powershell
-./test-agents-mcp-skills.ps1
-```
-
-**Prerequisites:** Ollama must be running with the `llama3.1:8b` model available.
-
-Only commit if the script exits with success (exit code 0).
+When modifying code cells in `agents-mcp-skills.dib`, run `./test-agents-mcp-skills.ps1` before committing. Requires Ollama running with `llama3.1:8b` model. Only commit if exit code is 0.
