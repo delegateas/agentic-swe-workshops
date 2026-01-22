@@ -58,6 +58,26 @@ VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
 
 #!markdown
 
+#### ℹ️ Installér Ollama nu, da det tager lidt tid
+
+**Windows (PowerShell):**
+```powershell
+winget install Ollama.Ollama
+```
+
+**Mac (Homebrew):**
+```bash
+brew install ollama
+```
+
+Start Ollama og hiv modellen ned:
+```bash
+ollama serve
+ollama pull llama3.1:8b
+```
+
+👆🏻 kan også foretages i GUI; vælg model, skriv en prompt (f.eks. "hej") og tryk retur
+
 ## Opsummering fra sidste gang
 
 - LLMs & Agents - What are they, and why can they code? — Martin
@@ -94,7 +114,7 @@ Console.WriteLine("Hello EV World!");
 
 ---
 
-## Det Agentiske Landskab – Benchmarks
+## Det Agentiske Landskab
 
 <img src="images/Orloff-1600x1067.webp" alt="Professor Orloff" width="600" style="max-width: 100%;">
 <br><br>
@@ -195,24 +215,6 @@ Forskning tager lang tid og der innoveres med lynets hast, så det handler i hø
 #!markdown
 
 ### 1. Er Ollama installeret og kørende?
-
-**Windows (PowerShell):**
-```powershell
-winget install Ollama.Ollama
-```
-
-**Mac (Homebrew):**
-```bash
-brew install ollama
-```
-
-Start Ollama og hiv modellen ned:
-```bash
-ollama serve
-ollama pull llama3.1:8b
-```
-
-👆🏻 kan også foretages i GUI; vælg model, skriv en prompt (f.eks. "hej") og tryk retur
 
 #!csharp
 
@@ -322,7 +324,7 @@ Nu bygger vi vores egen tool-definition.
 
 **Forskellen på SimpleTool og OllamaSharp's indbyggede Tool:**
 - `SimpleTool` har en `Execute` funktion - du kan se præcis hvad der kører
-- `OllamaSharp.Tool` er kun en data-struktur for JSON serialisering
+- `OllamaSharp.Tool` er kun en data-struktur for JSON serialisering, dvs. "automagi"
 
 #!csharp
 
@@ -331,8 +333,8 @@ using System.Text.Json;
 record SimpleTool(
     string Name,
     string Description,
-    string ParameterSchema,           // Raw JSON - fuldt synligt
-    Func<JsonElement, string> Execute // Selve koden - lige her!
+    string ParameterSchema,           // Raw JSON
+    Func<JsonElement, string> Execute // Selve koden
 );
 
 Console.WriteLine($"✅ {typeof(SimpleTool).Name} defineret!");
@@ -648,9 +650,9 @@ Console.WriteLine("✅ Alle tests kørte! Hvis du ser output ovenfor, virker din
 
 #!markdown
 
-## 1.5 The Agentic Loop - ~50 Lines, No Magic
+## 1.5 The Agentic Loop - ~50 Lines - det er det hele 
 
-Nu bygger vi det komplette agentic loop fra bunden.
+Nu bygger vi det komplette agentic loop fra bunden. Vi skal blot først oversætte vores SimpleTool til OllamaSharp's Tool-type.
 
 #!csharp
 
