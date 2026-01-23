@@ -520,6 +520,33 @@ Brug denne sektion til at eksperimentere med:
 - Flere MCP tools
 - Egne MCP servere
 
+#!markdown
+
+### 5.1 Test: Kernel.GetInputAsync på TOP LEVEL
+
+Denne celle tester om `Kernel.GetInputAsync()` virker korrekt i Polyglot Notebooks.
+
+#!csharp
+
+using Microsoft.DotNet.Interactive;
+
+Console.WriteLine("🧪 Testing Kernel.GetInputAsync at TOP LEVEL...\n");
+
+var response = await Kernel.GetInputAsync("Skriv noget (f.eks. 'y' eller 'n'):");
+
+Console.WriteLine($"\n📥 Du skrev: '{response}'");
+Console.WriteLine($"   IsNullOrEmpty: {string.IsNullOrEmpty(response)}");
+Console.WriteLine($"   Length: {response?.Length ?? 0}");
+
+if (!string.IsNullOrEmpty(response))
+{
+    Console.WriteLine("\n✅ SUCCESS! GetInputAsync virker på top level!");
+}
+else
+{
+    Console.WriteLine("\n❌ FEJL: GetInputAsync returnerede null/tom streng");
+}
+
 #!csharp
 
 // Din eksperimentering her...

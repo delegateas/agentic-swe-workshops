@@ -824,12 +824,12 @@ I produktion vil du ofte have tools der gør "farlige" ting - f.eks. starter en 
 // Definer hvilke tools der kræver bekræftelse
 var dangerousTools = new HashSet<string> { "calculate_charging_cost" };
 
-// Callback-baseret confirmation (dependency injection pattern)
-// confirmAction: funktion der tager toolName og returnerer true hvis confirmed
+// RunAgentWithConfirmation - næsten identisk med RunAgent!
+// Den eneste forskel: en optional confirmTool callback
 async Task<string> RunAgentWithConfirmation(
     string userMessage,
     Dictionary<string, SimpleTool> tools,
-    Func<string, Task<bool>>? confirmAction = null)
+    Func<string, string, bool>? confirmTool = null)  // ← Kun denne parameter er ny
 {
     var ollama = new OllamaApiClient("http://localhost:11434");
 
@@ -887,20 +887,17 @@ async Task<string> RunAgentWithConfirmation(
         foreach (var toolCall in assistantMessage.ToolCalls)
         {
             var toolName = toolCall.Function?.Name ?? "unknown";
+            var argsJson = JsonSerializer.Serialize(toolCall.Function?.Arguments);
             Console.WriteLine($"   Tool: {toolName}");
-            Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
+            Console.WriteLine($"   Args: {argsJson}");
 
-            // TODO: Tilføj bekræftelseslogik her!
-            // Hvis toolName er i dangerousTools OG confirmAction != null:
-            //   - Kald await confirmAction(toolName)
-            //   - Hvis false: skip dette tool call med continue
-            //   - Hvis true: fortsæt med at eksekvere tool
+            // 🎯 ØVELSE: Tilføj bekræftelseslogik her!
+            // Hvis toolName er i dangerousTools OG confirmTool != null,
+            // kald confirmTool(toolName, argsJson) og skip hvis false
 
             if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
             {
-                var argsJson = JsonSerializer.Serialize(toolCall.Function.Arguments);
                 var argsElement = JsonDocument.Parse(argsJson).RootElement;
-
                 var result = tool.Execute(argsElement);
                 Console.WriteLine($"   📤 Result: {result.Substring(0, Math.Min(80, result.Length))}...");
 
@@ -924,117 +921,48 @@ async Task<string> RunAgentWithConfirmation(
     return "Max iterations reached";
 }
 
-Console.WriteLine("✅ RunAgentWithConfirmation defined med callback-baseret confirmation!");
-Console.WriteLine("💡 Test med cellerne nedenfor:");
-Console.WriteLine("   - Auto-confirm: simulerer bruger der siger 'ja'");
-Console.WriteLine("   - Auto-reject: simulerer bruger der siger 'nej'");
+Console.WriteLine("✅ RunAgentWithConfirmation defineret - men mangler bekræftelseslogik!");
+Console.WriteLine("📝 Tilføj tjek for dangerousTools og kald confirmTool callback'et");
 
 #!markdown
 
 ### Hints til Øvelse 2
 
 <details>
-<summary>💡 Hint: Bekræftelseslogikken</summary>
+<summary>💡 Hint: Bekræftelseslogikken (~5 linjer)</summary>
 
 ```csharp
-// Tjek om tool er "farligt" OG vi har en confirmAction
-if (dangerousTools.Contains(toolName) && confirmAction != null)
+// Indsæt dette LIGE FØR "if (tools.TryGetValue...)"
+if (dangerousTools.Contains(toolName) && confirmTool != null)
 {
-    Console.WriteLine($"   🛡️ Awaiting confirmation for '{toolName}'...");
-    var confirmed = await confirmAction(toolName);
-
-    if (!confirmed)
+    if (!confirmTool(toolName, argsJson))
     {
-        Console.WriteLine("   ⏭️  Skipped by user");
+        Console.WriteLine($"   ⏭️ Skipped by user");
         messages.Add(new Message
         {
             Role = OllamaSharp.Models.Chat.ChatRole.Tool,
             Content = $"Tool {toolName} was skipped by user"
         });
-        continue;  // Spring til næste tool call
+        continue;  // Skip til næste tool call
     }
-    Console.WriteLine("   ✅ Confirmed by user");
+    Console.WriteLine($"   ✅ Confirmed by user");
 }
 ```
-
-</details>
-
-<details>
-<summary>✅ Fuld løsning: Modificeret loop</summary>
-
-```csharp
-foreach (var toolCall in assistantMessage.ToolCalls)
-{
-    var toolName = toolCall.Function?.Name ?? "unknown";
-    Console.WriteLine($"   Tool: {toolName}");
-    Console.WriteLine($"   Args: {JsonSerializer.Serialize(toolCall.Function?.Arguments)}");
-
-    // 🛡️ Human-in-the-loop bekræftelse (callback pattern)
-    if (dangerousTools.Contains(toolName) && confirmAction != null)
-    {
-        Console.WriteLine($"   🛡️ Awaiting confirmation for '{toolName}'...");
-        var confirmed = await confirmAction(toolName);
-
-        if (!confirmed)
-        {
-            Console.WriteLine("   ⏭️  Skipped by user");
-            messages.Add(new Message
-            {
-                Role = OllamaSharp.Models.Chat.ChatRole.Tool,
-                Content = $"Tool {toolName} was skipped by user"
-            });
-            continue;
-        }
-        Console.WriteLine("   ✅ Confirmed by user");
-    }
-
-    if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
-    {
-        // ... resten af koden
-    }
-}
-```
-
-**Lærdom:** Human-in-the-loop er kritisk for produktions-agents. Callback-pattern gør koden testbar og fleksibel!
-
 </details>
 
 #!markdown
 
-### Test med bekræftelse
-
-Når du har implementeret bekræftelseslogikken, test med auto-confirm:
+### Test din løsning
 
 #!csharp
 
-// Test human-in-the-loop med auto-confirm (simulerer bruger der siger "ja")
+// Test med callback der viser bekræftelsen
 var result = await RunAgentWithConfirmation(
     "Hvad koster det at lade 50 kWh kl. 18?",
     tools,
-    confirmAction: (toolName) => {
-        Console.WriteLine($"   🤖 Auto-confirming '{toolName}'");
-        return Task.FromResult(true);
-    }
-);
-
-Console.WriteLine("\n=== Final Response ===");
-Console.WriteLine(result);
-
-#!markdown
-
-### Test med afvisning
-
-Test hvad der sker når brugeren afviser:
-
-#!csharp
-
-// Test human-in-the-loop hvor bruger afviser
-var result = await RunAgentWithConfirmation(
-    "Hvad koster det at lade 50 kWh kl. 18?",
-    tools,
-    confirmAction: (toolName) => {
-        Console.WriteLine($"   🚫 Auto-rejecting '{toolName}'");
-        return Task.FromResult(false);
+    confirmTool: (toolName, args) => {
+        Console.WriteLine($"   🛡️ BEKRÆFTELSE: '{toolName}' med args: {args}");
+        return true;
     }
 );
 
