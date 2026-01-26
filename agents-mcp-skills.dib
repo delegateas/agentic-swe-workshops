@@ -25,32 +25,6 @@ En praktisk workshop hvor vi udforsker den nye verden af **agentic software engi
 
 ---
 
-## To Separate Veje
-
-```
-VEJ A: Byg Din Egen Agent (Del 1-3 + Extension)
-┌──────────────────────────────────────────────────────────────┐
-│  Del 1: SimpleTool + Manuel Loop                             │
-│     → Øvelse 1: Skriv Execute-funktioner                     │
-│     → Øvelse 2: Human-in-the-loop bekræftelse                │
-│  Del 2: OllamaSharp.Tool (valgfri sammenligning)             │
-│  Del 3: MCP + AIFunction                                     │
-│     → Øvelse 3: AIFunctionFactory tools                      │
-│  Extension: Udvid med nyt tool                               │
-│     → Øvelse 4: get_nearest_station                          │
-└──────────────────────────────────────────────────────────────┘
-
-VEJ B: Udvid en Eksisterende Agent (Del 4 - SEPARAT)
-┌──────────────────────────────────────────────────────────────┐
-│  Del 4: GitHub Copilot + SKILL.md                            │
-│     → Byg ikke en agent, udvid én du allerede har            │
-│     → SKILL.md filer tilføjer domæneviden                    │
-│     → Copilot har allerede loopet, LLM, tools                │
-└──────────────────────────────────────────────────────────────┘
-```
-
----
-
 #!markdown
 
 # Del 0: Intro, Recap & Polyglot Notebooks
