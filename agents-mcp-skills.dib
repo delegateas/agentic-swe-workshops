@@ -1053,7 +1053,7 @@ Console.WriteLine("  - Ingen Execute! ← Du skal selv matche tool calls til kod
 
 ## 2.2 Nøgleindsigt
 
-**OllamaSharp's Tool er bare en data-struktur til JSON serialisering.**
+**OllamaSharp's Tool er bare en data-struktur til JSON-serialisering.**
 
 Det er derfor vi byggede `SimpleTool` først - for at se det fulde billede:
 1. Tool *definition* (JSON schema) → sendes til LLM
