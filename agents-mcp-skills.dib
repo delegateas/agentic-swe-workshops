@@ -1463,8 +1463,6 @@ double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
 var testDistance = CalculateDistance(55.6761, 12.5683, 55.6839, 12.5715);
 Console.WriteLine($"Test: Afstand fra Rådhuspladsen til Nørreport: {testDistance:F2} km");
 
-#!csharp
-
 // 🎯 DIN TUR: Implementer get_nearest_station
 
 var getNearestStation = AIFunctionFactory.Create(
