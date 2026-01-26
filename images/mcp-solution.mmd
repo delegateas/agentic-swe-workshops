@@ -1,9 +1,10 @@
 flowchart LR
-    Copilot:::llm --> MCP
-    Claude:::llm --> MCP:::green
+    Copilot:::llm --> MCP:::green
+    Claude:::llm --> MCP
     Gemini:::llm --> MCP
-    MCP --> DB[(Database)]:::db
+    MCP --> T1[get_station_status]:::tool
+    MCP --> T2[calculate_charging_cost]:::tool
 
     classDef llm fill:#e1f5fe
     classDef green fill:#c8e6c9,stroke:#2e7d32
-    classDef db fill:#fff3e0
+    classDef tool fill:#fff3e0

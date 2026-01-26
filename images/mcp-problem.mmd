@@ -1,8 +1,10 @@
 flowchart LR
-    Copilot:::llm --> CC2[Custom connector]:::red --> DB2[(Database)]:::db
-    Claude:::llm --> CC1[Custom connector]:::red --> DB1[(Database)]:::db
-    Gemini:::llm --> CC3[Custom connector]:::red --> DB3[(Database)]:::db
+    Copilot:::llm --> T1[get_station_status]:::red
+    Copilot --> T2[calculate_charging_cost]:::red
+    Claude:::llm --> T3[get_station_status]:::red
+    Claude --> T4[calculate_charging_cost]:::red
+    Gemini:::llm --> T5[get_station_status]:::red
+    Gemini --> T6[calculate_charging_cost]:::red
 
     classDef llm fill:#e1f5fe
     classDef red fill:#ffcdd2,stroke:#c62828
-    classDef db fill:#fff3e0
