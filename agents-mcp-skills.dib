@@ -795,15 +795,16 @@ I produktion vil du ofte have tools der gør "farlige" ting - f.eks. starter en 
 
 // 🎯 ØVELSE 2: Tilføj human-in-the-loop confirmation
 
+using Microsoft.DotNet.Interactive;
+
 // Definer hvilke tools der kræver bekræftelse
 var dangerousTools = new HashSet<string> { "calculate_charging_cost" };
 
 // RunAgentWithConfirmation - næsten identisk med RunAgent!
-// Den eneste forskel: en optional confirmTool callback
+// Bruger Kernel.GetInputAsync() til at vise en VS Code dialog
 async Task<string> RunAgentWithConfirmation(
     string userMessage,
-    Dictionary<string, SimpleTool> tools,
-    Func<string, string, bool>? confirmTool = null)  // ← Kun denne parameter er ny
+    Dictionary<string, SimpleTool> tools)
 {
     var ollama = new OllamaApiClient("http://localhost:11434");
 
@@ -866,8 +867,9 @@ async Task<string> RunAgentWithConfirmation(
             Console.WriteLine($"   Args: {argsJson}");
 
             // 🎯 ØVELSE: Tilføj bekræftelseslogik her!
-            // Hvis toolName er i dangerousTools OG confirmTool != null,
-            // kald confirmTool(toolName, argsJson) og skip hvis false
+            // Hvis toolName er i dangerousTools:
+            //   - Brug await Kernel.GetInputAsync() til at spørge brugeren
+            //   - Hvis svaret ikke er "y", skip dette tool call med continue
 
             if (tools.TryGetValue(toolName, out var tool) && toolCall.Function?.Arguments != null)
             {
@@ -895,23 +897,23 @@ async Task<string> RunAgentWithConfirmation(
     return "Max iterations reached";
 }
 
-Console.WriteLine("✅ RunAgentWithConfirmation defineret - men mangler bekræftelseslogik!");
-Console.WriteLine("📝 Tilføj tjek for dangerousTools og kald confirmTool callback'et");
-
 #!markdown
 
-### Hints til Øvelse 2
+### Om Kernel.GetInputAsync()
+
+`Kernel.GetInputAsync()` er .NET Interactives måde at få bruger-input i Polyglot Notebooks. Den åbner en **VS Code input dialog** hvor brugeren kan skrive svar.
 
 <details>
-<summary>💡 Hint: Bekræftelseslogikken (~5 linjer)</summary>
+<summary>💡 Reference: Bekræftelseslogikken</summary>
 
 ```csharp
-// Indsæt dette LIGE FØR "if (tools.TryGetValue...)"
-if (dangerousTools.Contains(toolName) && confirmTool != null)
+// Tjek om tool er "farligt" og bed om bekræftelse
+if (dangerousTools.Contains(toolName))
 {
-    if (!confirmTool(toolName, argsJson))
+    var confirmation = await Kernel.GetInputAsync($"⚠️ Execute '{toolName}'? (y/n):");
+    if (confirmation?.Trim().ToLower() != "y")
     {
-        Console.WriteLine($"   ⏭️ Skipped by user");
+        Console.WriteLine("   ⏭️ Skipped by user");
         messages.Add(new Message
         {
             Role = OllamaSharp.Models.Chat.ChatRole.Tool,
@@ -919,25 +921,26 @@ if (dangerousTools.Contains(toolName) && confirmTool != null)
         });
         continue;  // Skip til næste tool call
     }
-    Console.WriteLine($"   ✅ Confirmed by user");
+    Console.WriteLine("   ✅ Confirmed by user");
 }
 ```
+
+**Lærdom:** Human-in-the-loop er kritisk for produktions-agents. Du bestemmer hvilke handlinger der kræver godkendelse!
+
 </details>
 
 #!markdown
 
 ### Test din løsning
 
+Kør cellen nedenfor. Når LLM vil kalde `calculate_charging_cost`, vil VS Code vise en input dialog. Skriv `y` for at godkende eller `n` for at afvise.
+
 #!csharp
 
-// Test med callback der viser bekræftelsen
+// Test human-in-the-loop - VS Code vil vise en dialog!
 var result = await RunAgentWithConfirmation(
     "Hvad koster det at lade 50 kWh kl. 18?",
-    tools,
-    confirmTool: (toolName, args) => {
-        Console.WriteLine($"   🛡️ BEKRÆFTELSE: '{toolName}' med args: {args}");
-        return true;
-    }
+    tools
 );
 
 Console.WriteLine("\n=== Final Response ===");
