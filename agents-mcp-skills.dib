@@ -1465,32 +1465,16 @@ Console.WriteLine($"Test: Afstand fra Rådhuspladsen til Nørreport: {testDistan
 
 #!csharp
 
-// get_nearest_station - studer denne implementering!
+// 🎯 DIN TUR: Implementer get_nearest_station
 
 var getNearestStation = AIFunctionFactory.Create(
     (double latitude, double longitude) =>
     {
-        // 1. Filtrer ledige stationer
-        var availableStations = stations.Values
-            .Where(s => !activeSessions.ContainsKey(s.Id))
-            .ToList();
+        // TODO: 1. Filtrer ledige stationer fra stations.Values
+        //       2. Find nærmeste med CalculateDistance()
+        //       3. Returner beskrivende streng
 
-        if (!availableStations.Any())
-            return "Ingen ledige stationer lige nu!";
-
-        // 2. Find nærmeste med LINQ
-        var nearest = availableStations
-            .Select(s => new {
-                Station = s,
-                Distance = CalculateDistance(latitude, longitude, s.Latitude, s.Longitude)
-            })
-            .OrderBy(x => x.Distance)
-            .First();
-
-        // 3. Returner beskrivende streng
-        return $"Nærmeste ledige station: {nearest.Station.Id} ({nearest.Station.Name}) - " +
-               $"{nearest.Distance:F2} km væk. " +
-               $"{nearest.Station.PowerKw}kW {nearest.Station.Type} charger ved {nearest.Station.Location}.";
+        throw new NotImplementedException("Implementer get_nearest_station!");
     },
     "get_nearest_station",
     "Find the nearest available charging station. Parameters: latitude and longitude of user's current position"
@@ -1498,7 +1482,7 @@ var getNearestStation = AIFunctionFactory.Create(
 
 // Tilføj til aiTools
 aiTools.Add(getNearestStation);
-Console.WriteLine($"🔌 aiTools har nu {aiTools.Count} tools (inkl. get_nearest_station)");
+Console.WriteLine($"🔌 aiTools har nu {aiTools.Count} tools (inkl. get_nearest_station stub)");
 
 #!markdown
 
