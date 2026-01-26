@@ -933,7 +933,9 @@ if (dangerousTools.Contains(toolName))
 
 ### Test din løsning
 
-Kør cellen nedenfor. Når LLM vil kalde `calculate_charging_cost`, vil VS Code vise en input dialog. Skriv `y` for at godkende eller `n` for at afvise.
+Kør cellen nedenfor. Når LLM vil kalde `calculate_charging_cost`, vil VS Code vise en input dialog 👆🏻. Skriv `y` for at godkende eller `n` for at afvise.
+
+ ![Kernel.GetInputAsync](images/Kernel.GetInputAsync().png)
 
 #!csharp
 
@@ -1848,6 +1850,11 @@ Du har nu set det selv. Du kan bygge en agent. Du forstår hvad der sker.
 > Whilst software development/programming is now dead. We however deeply need software engineers with these skills who understand that LLMs are a new form of programmable computer. If you haven’t built your own coding agent yet - please do.
 > — [Geoffrey Huntley](https://ghuntley.com/loop/)
 
+## Stof til eftertanke
+
+Kan du komme i tanke om systemer hvor statiske formularer, der forudsætter, at brugeren på forhånd ved, hvad vedkommende har brug for, kunne erstattes af multi-modale brugergrænseflader, der forstår brugerens intention?
+
+![Gammel vs. Ny UX-Logik](images/gammel-vs-ny-logik-ux.png)
 
 ## Ressourcer
 
@@ -1860,5 +1867,3 @@ Du har nu set det selv. Du kan bygge en agent. Du forstår hvad der sker.
 - [Introducing Microsoft Agent Framework](https://azure.microsoft.com/en-us/blog/introducing-microsoft-agent-framework/)
 
 ---
-
-## Tak for i dag! 🎉
